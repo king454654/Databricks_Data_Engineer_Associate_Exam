@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databricks Data Engineer Associate — Practice Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080d17;
+    --bg2: #0f1623;
+    --bg3: #151e2e;
+    --card: #111929;
+    --border: #1e2d45;
+    --accent: #FF6B35;
+    --accent2: #e55a24;
+    --accent-glow: rgba(255,107,53,0.18);
+    --blue: #4f8ef7;
+    --green: #2dd98a;
+    --red: #ff4d6a;
+    --yellow: #ffd166;
+    --text: #dde4f0;
+    --text2: #8899b4;
+    --text3: #4d6080;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --display: 'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ========== BACKGROUND ========== */
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,107,53,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,53,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-orb {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+    filter: blur(80px); opacity: 0.18;
+  }
+  .bg-orb-1 { width: 500px; height: 500px; background: #FF6B35; top: -150px; right: -100px; }
+  .bg-orb-2 { width: 400px; height: 400px; background: #4f8ef7; bottom: -100px; left: -100px; }
+
+  /* ========== SCREENS ========== */
+  .screen { position: relative; z-index: 1; }
+  .hidden { display: none !important; }
+
+  /* ========== HOME ========== */
+  #home {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .home-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent-glow); border: 1px solid rgba(255,107,53,0.3);
+    padding: 6px 16px; border-radius: 100px;
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .home-badge::before { content: '●'; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .home-title {
+    font-family: var(--display); font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800; line-height: 1.05; margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .home-sub {
+    font-size: 18px; color: var(--text2); max-width: 500px;
+    margin: 0 auto 40px;
+  }
+  .stats-row {
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px 32px; text-align: center;
+    min-width: 120px;
+  }
+  .stat-num { font-family: var(--display); font-size: 36px; font-weight: 800; color: var(--accent); }
+  .stat-lbl { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .settings-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px; max-width: 520px; width: 100%;
+    margin: 0 auto 40px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .settings-box h3 {
+    font-family: var(--display); font-size: 16px; font-weight: 700;
+    color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 16px;
+    margin-bottom: 4px;
+  }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .toggle-lbl { font-size: 14px; color: var(--text2); }
+  .toggle {
+    position: relative; width: 44px; height: 24px; cursor: pointer;
+  }
+  .toggle input { display: none; }
+  .toggle-track {
+    position: absolute; inset: 0; background: var(--bg3);
+    border-radius: 100px; border: 1px solid var(--border);
+    transition: 0.3s;
+  }
+  .toggle input:checked ~ .toggle-track { background: var(--accent); border-color: var(--accent); }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; background: #fff;
+    border-radius: 50%; transition: 0.3s;
+  }
+  .toggle input:checked ~ .toggle-thumb { left: 23px; }
+  .select-field {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); border-radius: 10px; padding: 10px 14px;
+    font-family: var(--sans); font-size: 14px;
+    width: 100%; outline: none; cursor: pointer;
+    appearance: none;
+  }
+  .select-field:focus { border-color: var(--accent); }
+  .btn-start {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 14px; padding: 16px 40px;
+    font-family: var(--display); font-size: 18px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 0 40px var(--accent-glow);
+  }
+  .btn-start:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 40px var(--accent-glow); }
+  .btn-start:active { transform: translateY(0); }
+
+  /* ========== QUIZ ========== */
+  #quiz {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    max-width: 860px; margin: 0 auto; padding: 0 20px;
+  }
+
+  /* TOP BAR */
+  .quiz-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0; gap: 16px; flex-wrap: wrap;
+  }
+  .quiz-progress-wrap { flex: 1; min-width: 200px; }
+  .quiz-progress-info {
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 4px; background: var(--bg3); border-radius: 100px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #ff9a68);
+    border-radius: 100px; transition: width 0.5s ease;
+  }
+  .quiz-meta { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .score-pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 16px;
+    font-family: var(--mono); font-size: 12px; color: var(--text2);
+  }
+  .score-pill span { color: var(--green); font-weight: 600; }
+  .timer-pill {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 16px;
+    font-family: var(--mono); font-size: 13px; color: var(--yellow);
+  }
+  .timer-pill.urgent { color: var(--red); animation: blink 0.5s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 40px;
+    margin-bottom: 24px;
+    animation: slideIn 0.3s ease forwards;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+  }
+  .q-num {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    background: var(--accent-glow); border: 1px solid rgba(255,107,53,0.2);
+    padding: 4px 12px; border-radius: 100px;
+  }
+  .q-topic {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .multi-badge {
+    margin-left: auto; background: rgba(79,142,247,0.15);
+    border: 1px solid rgba(79,142,247,0.3);
+    color: var(--blue); font-family: var(--mono); font-size: 10px;
+    padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .q-text {
+    font-size: 16px; line-height: 1.75; color: var(--text);
+    margin-bottom: 28px;
+  }
+  .q-code {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 16px 0;
+    font-family: var(--mono); font-size: 13px; color: #a8c4f0;
+    white-space: pre-wrap; line-height: 1.7;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 16px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 20px;
+    cursor: pointer; transition: all 0.2s; text-align: left;
+    width: 100%; color: var(--text);
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent); background: rgba(255,107,53,0.06);
+    transform: translateX(4px);
+  }
+  .option-letter {
+    flex-shrink: 0; width: 28px; height: 28px;
+    border-radius: 8px; background: var(--bg2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    color: var(--text2); transition: all 0.2s;
+  }
+  .option-text { font-size: 14px; line-height: 1.6; padding-top: 4px; }
+
+  /* States */
+  .option-btn.selected { border-color: var(--blue); background: rgba(79,142,247,0.08); }
+  .option-btn.selected .option-letter { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .option-btn.correct { border-color: var(--green); background: rgba(45,217,138,0.08); }
+  .option-btn.correct .option-letter { background: var(--green); border-color: var(--green); color: #000; }
+  .option-btn.wrong { border-color: var(--red); background: rgba(255,77,106,0.08); }
+  .option-btn.wrong .option-letter { background: var(--red); border-color: var(--red); color: #fff; }
+  .option-btn:disabled { cursor: not-allowed; }
+
+  /* FEEDBACK */
+  .feedback-box {
+    margin-top: 20px; padding: 16px 20px;
+    border-radius: 12px; font-size: 14px; display: none; gap: 12px; align-items: flex-start;
+  }
+  .feedback-box.show { display: flex; animation: fadeIn 0.2s ease; }
+  .feedback-box.correct-fb { background: rgba(45,217,138,0.1); border: 1px solid rgba(45,217,138,0.3); }
+  .feedback-box.wrong-fb { background: rgba(255,77,106,0.1); border: 1px solid rgba(255,77,106,0.3); }
+  .fb-icon { font-size: 18px; flex-shrink: 0; }
+  .fb-text { line-height: 1.6; color: var(--text2); }
+  .fb-text strong { color: var(--text); }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* ACTION BUTTONS */
+  .action-row {
+    display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 24px; border-radius: 12px; border: none;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-outline {
+    background: transparent; color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-submit { background: var(--blue); color: #fff; }
+  .btn-submit:hover { background: #3a7ae8; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-next { margin-left: auto; }
+
+  /* BOTTOM NAV */
+  .quiz-bottom { padding: 16px 0 40px; }
+
+  /* ========== RESULTS ========== */
+  #results {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; padding: 60px 24px;
+    max-width: 860px; margin: 0 auto;
+  }
+  .results-header { text-align: center; margin-bottom: 48px; }
+  .results-icon { font-size: 64px; margin-bottom: 16px; }
+  .results-title {
+    font-family: var(--display); font-size: 48px; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .results-title.pass { color: var(--green); }
+  .results-title.fail { color: var(--red); }
+  .results-sub { font-size: 16px; color: var(--text2); }
+  .results-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px; width: 100%; max-width: 700px; margin-bottom: 40px;
+  }
+  .result-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; text-align: center;
+  }
+  .result-card .num {
+    font-family: var(--display); font-size: 40px; font-weight: 800; margin-bottom: 4px;
+  }
+  .result-card .lbl { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .result-card.green .num { color: var(--green); }
+  .result-card.red .num { color: var(--red); }
+  .result-card.yellow .num { color: var(--yellow); }
+  .result-card.blue .num { color: var(--blue); }
+  .score-bar-wrap {
+    width: 100%; max-width: 700px; margin-bottom: 40px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+  }
+  .score-bar-lbl {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; color: var(--text2); margin-bottom: 12px;
+  }
+  .score-bar-lbl .pct { font-family: var(--display); font-size: 28px; color: var(--text); font-weight: 800; }
+  .score-bar-track {
+    height: 12px; background: var(--bg3); border-radius: 100px; overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%; border-radius: 100px;
+    transition: width 1s ease;
+  }
+  .score-bar-fill.pass { background: linear-gradient(90deg, var(--green), #1adf7a); }
+  .score-bar-fill.fail { background: linear-gradient(90deg, var(--red), #ff7088); }
+  .results-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 48px; }
+  .btn-lg { padding: 16px 36px; font-size: 16px; border-radius: 14px; }
+
+  /* REVIEW TABLE */
+  .review-section { width: 100%; }
+  .review-title {
+    font-family: var(--display); font-size: 22px; font-weight: 700;
+    margin-bottom: 20px; color: var(--text);
+  }
+  .review-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; margin-bottom: 12px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .review-item:hover { border-color: var(--accent); }
+  .review-item-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 0;
+  }
+  .review-status { font-size: 16px; flex-shrink: 0; }
+  .review-q-num { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+  .review-q-text {
+    font-size: 14px; color: var(--text); flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .review-detail { display: none; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .review-detail.open { display: block; }
+  .review-detail .q-text { font-size: 14px; margin-bottom: 12px; }
+  .review-answers { display: flex; flex-direction: column; gap: 8px; }
+  .review-opt {
+    padding: 10px 16px; border-radius: 10px; font-size: 13px;
+    border: 1px solid transparent;
+  }
+  .review-opt.r-correct { border-color: var(--green); background: rgba(45,217,138,0.08); color: var(--green); }
+  .review-opt.r-wrong { border-color: var(--red); background: rgba(255,77,106,0.08); color: var(--red); }
+  .review-opt.r-neutral { border-color: var(--border); color: var(--text2); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 100px; }
+
+  /* TOPIC FILTER */
+  .topic-pills {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .topic-pill {
+    padding: 4px 14px; border-radius: 100px;
+    border: 1px solid var(--border); background: var(--bg3);
+    font-size: 12px; color: var(--text2); cursor: pointer; transition: all 0.2s;
+  }
+  .topic-pill.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+  .topic-pill:hover:not(.active) { border-color: var(--text3); }
+
+  @media (max-width: 600px) {
+    .question-card { padding: 24px 20px; }
+    .quiz-topbar { padding: 16px 0; }
+    .btn-next { margin-left: 0; }
+    .results-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<!-- ============ HOME SCREEN ============ -->
+<div id="home" class="screen">
+  <div class="home-badge">Databricks Certified</div>
+  <h1 class="home-title">Data Engineer<br>Associate Exam</h1>
+  <p class="home-sub">Practice all exam questions with instant feedback and detailed score tracking.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="total-q-count">162</div>
+      <div class="stat-lbl">Questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">70%</div>
+      <div class="stat-lbl">Pass Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">~90</div>
+      <div class="stat-lbl">Min Exam</div>
+    </div>
+  </div>
+
+  <div class="settings-box">
+    <h3>⚙ Quiz Settings</h3>
+    <div class="toggle-row">
+      <span class="toggle-lbl">Shuffle questions</span>
+      <label class="toggle">
+        <input type="checkbox" id="opt-shuffle" checked>
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-lbl">Show answer after each question</span>
+      <label class="toggle">
+        <input type="checkbox" id="opt-show-answer" checked>
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-lbl">Enable timer (90 min)</span>
+      <label class="toggle">
+        <input type="checkbox" id="opt-timer">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div>
+      <div class="toggle-lbl" style="margin-bottom:8px">Filter by topic</div>
+      <select class="select-field" id="opt-topic">
+        <option value="all">All topics</option>
+        <option value="Compute">Compute</option>
+        <option value="Delta Lake">Delta Lake</option>
+        <option value="DLT">Delta Live Tables</option>
+        <option value="Unity Catalog">Unity Catalog</option>
+        <option value="Medallion">Medallion Architecture</option>
+        <option value="Streaming">Streaming</option>
+        <option value="SQL">SQL & DDL</option>
+        <option value="Python">Python & PySpark</option>
+        <option value="Jobs">Jobs & Workflows</option>
+        <option value="Governance">Governance & Security</option>
+        <option value="Optimization">Optimization</option>
+        <option value="Architecture">Architecture</option>
+      </select>
+    </div>
+    <div>
+      <div class="toggle-lbl" style="margin-bottom:8px">Number of questions</div>
+      <select class="select-field" id="opt-count">
+        <option value="all">All questions</option>
+        <option value="20">20 (quick practice)</option>
+        <option value="45">45 (half exam)</option>
+        <option value="90">90 (full exam)</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">▶ &nbsp;Start Practice Exam</button>
+</div>
+
+<!-- ============ QUIZ SCREEN ============ -->
+<div id="quiz" class="screen hidden">
+  <div class="quiz-topbar">
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-info">
+        <span id="q-counter">Question 1 / 45</span>
+        <span id="q-topic-label">Compute</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="quiz-meta">
+      <div class="score-pill">✓ <span id="live-score">0</span> correct</div>
+      <div class="timer-pill hidden" id="timer-display">90:00</div>
+    </div>
+  </div>
+
+  <div class="question-card" id="q-card">
+    <div class="q-header">
+      <span class="q-num" id="q-num-badge">Q01</span>
+      <span class="q-topic" id="q-topic-badge">Compute</span>
+      <span class="multi-badge hidden" id="multi-badge">Choose 2</span>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback-box" id="feedback-box">
+      <span class="fb-icon" id="fb-icon"></span>
+      <div class="fb-text" id="fb-text"></div>
+    </div>
+  </div>
+
+  <div class="quiz-bottom">
+    <div class="action-row">
+      <button class="btn btn-outline" onclick="skipQuestion()">Skip →</button>
+      <button class="btn btn-submit hidden" id="btn-submit" onclick="submitMulti()">Submit Answer</button>
+      <button class="btn btn-primary btn-next hidden" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RESULTS SCREEN ============ -->
+<div id="results" class="screen hidden">
+  <div class="results-header">
+    <div class="results-icon" id="r-icon">🏆</div>
+    <div class="results-title" id="r-title">Passed!</div>
+    <div class="results-sub" id="r-sub">You scored 78% — above the 70% pass mark</div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-card green"><div class="num" id="r-correct">0</div><div class="lbl">Correct</div></div>
+    <div class="result-card red"><div class="num" id="r-wrong">0</div><div class="lbl">Wrong</div></div>
+    <div class="result-card yellow"><div class="num" id="r-skipped">0</div><div class="lbl">Skipped</div></div>
+    <div class="result-card blue"><div class="num" id="r-total">0</div><div class="lbl">Total</div></div>
+  </div>
+
+  <div class="score-bar-wrap">
+    <div class="score-bar-lbl">
+      <span>Your Score</span>
+      <span class="pct" id="r-pct">0%</span>
+    </div>
+    <div class="score-bar-track">
+      <div class="score-bar-fill" id="r-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="results-actions">
+    <button class="btn btn-primary btn-lg" onclick="restartQuiz()">↺ &nbsp;Restart Quiz</button>
+    <button class="btn btn-outline btn-lg" onclick="goHome()">🏠 &nbsp;Back to Home</button>
+    <button class="btn btn-outline btn-lg" onclick="toggleReview()">📋 &nbsp;Review Answers</button>
+  </div>
+
+  <div class="review-section" id="review-section" style="display:none">
+    <div class="review-title">Answer Review</div>
+    <div id="review-list"></div>
+  </div>
+</div>
+
+<script>
+// ==================== QUESTIONS DATA ====================
+const ALL_QUESTIONS = [
+  {q:"A data engineer needs to process SQL queries on a large dataset with fluctuating workloads. The workload requires automatic scaling based on the volume of queries, without the need to manage or provision infrastructure. The solution should be cost-efficient and charge only for the compute resources used during query execution. Which compute option should the data engineer use?",opts:{A:"Databricks Runtime for ML",B:"Databricks SQL Analytics",C:"Serverless SQL Warehouse",D:"Databricks Jobs"},correct:"C",topic:"Compute"},
+  {q:"How does Unity Catalog's data lineage feature support the visualization of relationships between Delta tables, notebooks, jobs, and dashboards?",opts:{A:"Unity Catalog lineage visualizes dependencies between Delta tables, notebooks, and jobs, but does not provide column-level tracing or relationships with dashboards.",B:"Unity Catalog provides an interactive graph that visualizes the dependencies between Delta tables, notebooks, jobs, and dashboards, while also supporting column-level tracking of data transformations.",C:"Unity Catalog lineage provides an interactive graph that tracks dependencies between tables and notebooks but excludes any job-related dependencies or dashboard visualizations.",D:"Unity Catalog lineage only supports visualizing relationships at the table level and does not extend to notebooks, jobs, or dashboards."},correct:"B",topic:"Unity Catalog"},
+  {q:"A data engineer needs to conduct Exploratory Analysis on data residing in a database that is within the company's custom-defined network in the cloud. The data engineer is using SQL for this task. Which type of SQL Warehouse will enable the data engineer to process large numbers of queries quickly and cost-effectively?",opts:{A:"Serverless SQL Warehouse",B:"Serverless compute for notebooks",C:"Classic SQL Warehouse",D:"Pro SQL Warehouse"},correct:"C",topic:"Compute"},
+  {q:"A data engineer needs to share a collection of tables with an external partner who also uses a Databricks workspace enabled for Unity Catalog using Delta Sharing. What is the first piece of information the data engineer should request from the external partner to set up Delta Sharing?",opts:{A:"The name of their Databricks cluster",B:"Their Databricks account password",C:"The IP address of their Databricks workspace",D:"The sharing identifier of their Unity Catalog metastore"},correct:"D",topic:"Governance"},
+  {q:"A data engineer needs to grant a group named manufacturing-team the privileges to create tables in the quality schema. Which set of SQL commands grants the group the ability to create tables in a schema named production with the parent catalog named manufacturing, with the least privileges?",opts:{A:"GRANT USE TABLE ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT USE SCHEMA ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT USE CATALOG ON CATALOG manufacturing TO manufacturing-team;",B:"GRANT CREATE TABLE ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT CREATE SCHEMA ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT USE CATALOG ON CATALOG manufacturing TO manufacturing-team;",C:"GRANT CREATE TABLE ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT USE SCHEMA ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT USE CATALOG ON CATALOG manufacturing TO manufacturing-team;",D:"GRANT CREATE TABLE ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT CREATE SCHEMA ON SCHEMA manufacturing.quality TO manufacturing-team; GRANT CREATE CATALOG ON CATALOG manufacturing TO manufacturing-team;"},correct:"C",topic:"Governance"},
+  {q:"A Python file is ready to go into production. The workload is quite small, only processing 10 GB of data with only simple joins and no complex aggregations or wide transformations. The client wants to use the cheapest but most efficient cluster type. Which cluster meets the requirement?",opts:{A:"Interactive cluster",B:"Job cluster with Photon enabled",C:"Job cluster with spot instances disabled",D:"Job cluster with spot instances enabled"},correct:"D",topic:"Compute"},
+  {q:"A data engineer is inspecting an ETL pipeline based on a PySpark job. The data engineer observes the Spark UI and finds the job has a high CPU time vs Task time. Which course of action should the data engineer take?",opts:{A:"High CPU time vs Task time means an under-utilized cluster. The data engineer may need to repartition data to spread the jobs more evenly throughout the cluster.",B:"High CPU time vs Task time means efficient use of cluster and no change needed",C:"High CPU time vs Task time means over-utilized memory and the need to increase parallelism",D:"High CPU time vs Task time means a CPU over-utilized job. The data engineer may need to consider executor and core tuning or resizing the cluster"},correct:"D",topic:"Optimization"},
+  {q:"A company needs to share a large historical dataset stored in Delta format with a partner that does not use Databricks. The partner should have read-only access and should not need to set up an account. How should the data be shared?",opts:{A:"Share the dataset by exporting it to a CSV file and manually transferring the file to the partner's system.",B:"Share the dataset using Delta Sharing, which allows your partner to access the data using a secure, read-only URL without requiring a Databricks account, ensuring that they cannot modify the data.",C:"Grant your partner access to your Databricks workspace and assign them full write permissions to the Delta table, enabling them to modify the dataset.",D:"Share the dataset using Unity Catalog, ensuring that both teams have full write access to the data within the same organization."},correct:"B",topic:"Governance"},
+  {q:"A data engineering team is using Kafka to capture event data and then ingest it into Databricks. They want to see historical events. Medallion architecture is already in place. The team wants to be mindful of costs. Where should this historical event data be stored?",opts:{A:"Gold",B:"Silver",C:"Bronze",D:"Raw layer"},correct:"C",topic:"Medallion"},
+  {q:"A data engineer is developing an ETL process based on Spark SQL. The execution fails with 'java.lang.OutOfMemoryError: Java heap space'. Which TWO corrective actions should the data engineer perform to resolve this issue?",opts:{A:"Narrow the filters in order to collect less data in the query",B:"Upsize the worker nodes and activate autoshuffle partitions",C:"Upsize the driver node and deactivate autoshuffle partitions",D:"Cache the dataset in order to boost the query performance",E:"Fix the shuffle partitions to 50 to ensure the allocation"},correct:["A","B"],multi:true,topic:"Optimization"},
+  {q:"What is the functionality of Autoloader in Databricks?",opts:{A:"Auto Loader automatically ingests and processes new files from cloud storage, handling only streaming data with no support for schema evolution.",B:"Auto Loader automatically ingests and processes new files from cloud storage, handling batch data with support for schema evolution.",C:"Auto Loader automatically ingests and processes new files from cloud storage, handling batch and streaming data with no support for schema evolution.",D:"Auto Loader automatically ingests and processes new files from cloud storage, handling both batch and streaming data with support for schema evolution."},correct:"D",topic:"Streaming"},
+  {q:"A data engineer is attempting to write Python and SQL in the same command cell and is running into an error. The engineer thought that it was possible to use a Python variable in a SQL select statement. Why does the command fail?",opts:{A:"Databricks supports language interoperability but only if a special character is used.",B:"Databricks supports language interoperability in the same cell but only between Scala and SQL",C:"Databricks supports one language per cell.",D:"Databricks supports multiple languages but only one per notebook."},correct:"C",topic:"Python"},
+  {q:"What are the transformations typically included in building the Bronze layer?",opts:{A:"Include columns Load date/time, process ID",B:"Perform extensive data cleansing",C:"Business rules and transformations",D:"Aggregate data from multiple sources"},correct:"A",topic:"Medallion"},
+  {q:"Which code snippet will correctly ingest raw JSON data and create a Delta table using Delta Live Tables (DLT)?",opts:{A:"import dlt\n@dlt.table\ndef raw_customers():\n    return spark.read.format(\"parquet\").load(\"s3://my-bucket/raw-customers/\")",B:"import dlt\n@dlt.table\ndef raw_customers():\n    return spark.read.json(\"s3://my-bucket/raw-customers/\")",C:"import dlt\n@dlt.view\ndef raw_customers():\n    return spark.format.json(\"s3://my-bucket/raw-customers/\")",D:"import dlt\n@dlt.table\ndef raw_customers():\n    return spark.read.format(\"csv\").load(\"s3://my-bucket/raw-customers/\")"},correct:"B",topic:"DLT",code:true},
+  {q:"A company uses Delta Sharing to collaborate with partners across different cloud providers and geographic regions. What will result in additional costs due to cross-region or egress fees?",opts:{A:"Transferring data via Delta Sharing across clouds and across different geographic regions",B:"Accessing Delta Sharing data using a VPN within the same data centre",C:"Sharing data within the same cloud provider and region",D:"Utilizing Delta Sharing for internal data analytics within a single cloud environment"},correct:"A",topic:"Governance"},
+  {q:"An organization needs to share a dataset stored in its Databricks Unity Catalog with an external partner who uses a different data platform that is not Databricks. The goal is to maintain data security and ensure the partner can access the data efficiently. Which method should the data engineer use?",opts:{A:"Using Delta Sharing with the open sharing protocol",B:"Reporting data as CSV files and emailing them",C:"Using a third-party API to access the Delta table",D:"Databricks-to-Databricks Sharing"},correct:"A",topic:"Governance"},
+  {q:"A data engineer is configuring Unity Catalog and needs to assign a role to a user who should have the ability to grant and revoke privileges on various data objects within a specific schema, but should not have read/write access over the schema or its objects. Which role should the data engineer assign?",opts:{A:"Catalog Owner",B:"Schema Owner",C:"Table Owner",D:"USE Catalog/schema privilege on the schema"},correct:"B",topic:"Unity Catalog"},
+  {q:"A data engineer is debugging a Python notebook in Databricks that processes a dataset using PySpark. The notebook fails with an error during a DataFrame transformation. The engineer wants to inspect the state of variables, such as the input DataFrame and intermediate results. Which tool should the engineer use?",opts:{A:"Use the Databricks CLI to download and analyze driver logs for detailed error messages",B:"Use the Python Notebook Interactive Debugger to set breakpoints and inspect variable values in real-time",C:"Use the Ganglia UI to monitor cluster resource usage and identify hardware issues",D:"Use the Spark UI to analyze the execution plan and identify stages where the job failed"},correct:"B",topic:"Python"},
+  {q:"A data engineer needs to compute complex aggregations to determine each product's total revenue, average revenue, and transaction count from a PySpark DataFrame. Which code snippet should the data engineer use?",opts:{A:"from pyspark.sql import functions as F\naggregated_df = df.groupBy(\"product\").agg(F.sum(\"revenue\").alias(\"total_revenue\"), F.avg(\"revenue\").alias(\"avg_revenue\"), F.count(\"*\").alias(\"transaction_count\"))",B:"aggregated_df = df.groupby(\"product\").agg(\"sum(revenue)\", \"avg(revenue)\", \"count(revenue)\")",C:"from pyspark.sql import functions as F\naggregated_df = df.select(\"product\", \"revenue\").groupBy(\"product\").agg(F.sum(\"revenue\"), F.mean(\"revenue\"))",D:"aggregated_df = df.groupBy(\"product\").agg({\"revenue\": \"sum\", \"revenue\": \"avg\", \"revenue\": \"count\"})"},correct:"A",topic:"Python",code:true},
+  {q:"An organization is looking for an optimized storage layer that supports ACID transactions and schema enforcement. Which technology should the organization use?",opts:{A:"Unity Catalog",B:"Data lake",C:"Delta Lake",D:"Cloud File Storage"},correct:"C",topic:"Delta Lake"},
+  {q:"Which compute option should be chosen in a scenario where small-scale ad-hoc Python scripts need to be run at high frequency and should wind down quickly after these queries have finished running?",opts:{A:"All-purpose Cluster",B:"Job Cluster",C:"Serverless Compute",D:"SQL Warehouse"},correct:"C",topic:"Compute"},
+  {q:"A data engineer has written a function to calculate bacteria population. Analysts sometimes provide input arguments of the wrong data type. Which Databricks feature will help the data engineer quickly identify if an incorrect data type has been provided as input?",opts:{A:"The Data Engineer should add print statements to find out what the variable is.",B:"The Spark User interface has a debug tab that contains the variables used in the session.",C:"The Databricks debugger enables breakpoints that will raise an error if the wrong data type is submitted",D:"The Databricks debugger enables the use of a variable explorer to see at a glance the value of the variables."},correct:"D",topic:"Python"},
+  {q:"A data engineer is developing a small proof of concept in a notebook. When running the entire notebook, the Cluster usage spikes. The data engineer wants to keep the development requirements and get real-time results. Which Cluster meets these requirements?",opts:{A:"Job cluster with Photon enabled and autoscaling",B:"Job Cluster with autoscaling enabled",C:"All Purpose Cluster with autoscaling",D:"All-Purpose Cluster with a large fixed memory size"},correct:"C",topic:"Compute"},
+  {q:"Which SQL code snippet will correctly demonstrate a Data Definition Language (DDL) operation used to create a table?",opts:{A:"CREATE TABLE employees (id INT, name STRING);",B:"INSERT INTO employees (id, name) VALUES (1, 'Alice');",C:"ALTER TABLE employees ADD COLUMN salary DECIMAL(10,2);",D:"DROP TABLE employees;"},correct:"A",topic:"SQL"},
+  {q:"Why is Delta Live Tables (DLT) an appropriate choice for a pipeline that must ensure data quality, handle schema evolution, and provide easy maintenance for both streaming and batch data?",opts:{A:"Automatic data quality checks, built-in support for schema evolution, and declarative pipeline development",B:"Manual schema enforcement, high operational overhead, and limited scalability",C:"Requires custom code for data quality checks, no support for streaming data, and complex pipeline maintenance",D:"Supports only batch processing, no data versioning, and high infrastructure costs"},correct:"A",topic:"DLT"},
+  {q:"An organization needs to ensure their data pipeline can scale automatically based on varying workloads without manual cluster management, while meeting high availability SLAs. Which approach fulfils these requirements?",opts:{A:"Use Spot Instances to allocate resources dynamically while minimizing costs, with potential interruptions.",B:"Use Serverless compute in Databricks to automatically scale and provision resources with minimal manual intervention.",C:"Use Interactive Clusters in Databricks, adjusting cluster sizes manually based on workload demands.",D:"Deploy Job Clusters with fixed configurations, dedicated to specific tasks, without automatic scaling."},correct:"B",topic:"Compute"},
+  {q:"A data engineer wants to create an external table in Databricks that references data stored in an Azure Data Lake Storage (ADLS) location. Which step should the data engineer take to successfully create the external table?",opts:{A:"Use the CREATE MANAGED TABLE statement and specify the LOCATION clause with the path to the external data.",B:"CREATE UNMANAGED TABLE statement without specifying a LOCATION clause.",C:"CREATE EXTERNAL TABLE statement without specifying a LOCATION clause.",D:"Use the CREATE TABLE statement and specify the LOCATION clause with the path to the external data."},correct:"D",topic:"SQL"},
+  {q:"How does Databricks Connect enable the engineer to develop, test, and debug code seamlessly on their local machine while interacting with Databricks clusters?",opts:{A:"By providing a local environment that mimics the Databricks runtime, enabling the engineer to develop, test, and debug code using their preferred IDE",B:"By providing a local environment that mimics the Databricks runtime, enabling the engineer to develop, test, and debug code using a specific IDE that is required by Databricks",C:"By allowing direct execution of Spark jobs from the local machine without needing a network",D:"By providing a local environment that mimics the Databricks runtime, enabling the engineer to develop, test, and debug code only through Databricks' own web interface"},correct:"A",topic:"Architecture"},
+  {q:"Calculate the total sales amount for each region and store the results in a new dataframe called region_sales. Given a PySpark dataframe named sales_df, which code correctly groups by region and aggregates total sales?",opts:{A:"region_sales = sales_df.groupBy(\"region\").agg(sum(\"sales_amount\").alias(\"total_sales_amount\"))",B:"region_sales = sales_df.agg(sum(\"sales_amount\").alias(\"total_sales_amount\")).groupBy(\"region\")",C:"region_sales = sales_df.groupBy(\"region\").agg(sales(\"total_sales_amount\"))",D:"region_sales = sales_df.groupBy(\"region\").agg(sales_df(\"total_sales_amount\"))"},correct:"A",topic:"Python"},
+  {q:"A data engineer needs to develop integration tests for an ETL process and deploy a version-controlled packaged pipeline. Which Databricks tool is most appropriate?",opts:{A:"Databricks Command Line Interface",B:"Databricks Software Development Kit",C:"Databricks Asset Bundles",D:"Databricks Connect"},correct:"C",topic:"Jobs"},
+  {q:"A data engineer needs to ingest from both streaming and batch sources. Occasionally, some streaming sensor data is outside the expected parameters—if this occurs, the data must be dropped but the stream should not fail. Which feature of Delta Live Tables meets this requirement?",opts:{A:"Expectations",B:"Error Handling",C:"Change Data Capture",D:"Monitoring"},correct:"A",topic:"DLT"},
+  {q:"A data engineer wants to load files from cloud storage as soon as the file arrives using Python. Which syntax should the data engineer follow to first load the files into a dataframe?",opts:{A:"df = spark.read.json(\"/input/path\")",B:"df = spark.readStream.format(\"cloudFiles\").option(\"cloudFiles.format\", \"json\").load(\"/input/path\")",C:"df = spark.readStream.format(\"cloud\").option(\"json\").load(\"/input/path\")",D:"df = spark.readStream.format(\"json\").load(\"/input/path\")"},correct:"B",topic:"Streaming"},
+  {q:"A data engineer is using the Databricks OPTIMIZE command on a Delta table. What happens when OPTIMIZE is run twice on the same table with the same data?",opts:{A:"It changes the number of tuples per file significantly.",B:"It triggers a full liquid clustering process.",C:"It has no effect because it is idempotent.",D:"It further reduces file sizes by re-clustering the data"},correct:"C",topic:"Optimization"},
+  {q:"Which TWO items are characteristics of the Gold Layer?",opts:{A:"De-normalised",B:"Normalised",C:"Raw Data",D:"Historical lineage",E:"Read-optimized"},correct:["A","E"],multi:true,topic:"Medallion"},
+  {q:"A Databricks single-task workflow fails at the last task due to an error in a notebook. The data engineer fixes the mistake in the notebook. What should the data engineer do to rerun the workflow?",opts:{A:"Repair the task",B:"Rerun the pipeline",C:"Restart the Cluster",D:"Switch the cluster"},correct:"A",topic:"Jobs"},
+  {q:"A Databricks workflow fails at the last stage due to an error in a notebook. This workflow runs daily and is very costly and time-intensive to run. The data engineer fixes the mistake. Which action should the data engineer take to minimise downtime and cost?",opts:{A:"Restart the cluster",B:"Switch to another cluster",C:"Repair run",D:"Re-run the entire workflow"},correct:"C",topic:"Jobs"},
+  {q:"How are events formatted in Databricks audit logs?",opts:{A:"In Databricks, audit logs output events in a JSON format.",B:"In Databricks, audit logs output events in an XML format.",C:"In Databricks, audit logs output events in a CSV format.",D:"In Databricks, audit logs output events in a plain text format."},correct:"A",topic:"Governance"},
+  {q:"A data engineer wants their entire team to be notified via a messaging webhook whenever the number of NULL values in a Databricks SQL query reaches 100. Which approach can the data engineer use?",opts:{A:"They can set up an Alert with a custom template.",B:"They can set up an Alert with a new email alert destination.",C:"They can set up an Alert with a new webhook alert destination.",D:"They can set up an Alert with one-time notifications",E:"They can set up an Alert without notifications."},correct:"C",topic:"Jobs"},
+  {q:"Which method should a Data Engineer apply to ensure Workflows are being triggered on schedule?",opts:{A:"Scheduled Workflows require an always-running cluster, which is more expensive but reduces processing latency.",B:"Scheduled Workflows process data as it arrives at configured sources.",C:"Scheduled Workflows can reduce resource consumption and expense since the cluster runs only long enough to execute the pipeline.",D:"Scheduled Workflows run continuously until manually stopped."},correct:"C",topic:"Jobs"},
+  {q:"Which of the following must be specified when creating a new Delta Live Tables pipeline?",opts:{A:"A key-value pair configuration",B:"The preferred DBU/hour cost",C:"A path to cloud storage location for the written data",D:"A location of a target database for the written data",E:"At least one notebook library to be executed"},correct:"E",topic:"DLT"},
+  {q:"Which type of workloads are compatible with Auto Loader?",opts:{A:"Streaming workloads",B:"Machine learning workloads",C:"Serverless workloads",D:"Batch workloads"},correct:"A",topic:"Streaming"},
+  {q:"Which type of workloads are always compatible with Auto Loader?",opts:{A:"Streaming workloads",B:"Machine learning workloads",C:"Serverless workloads",D:"Batch workloads",E:"Dashboard workloads"},correct:"A",topic:"Streaming"},
+  {q:"A data analysis team's Databricks SQL queries are running too slowly when many members are running small queries simultaneously on the same SQL endpoint. Which approach can the data engineering team use to improve the latency of the team's queries?",opts:{A:"They can increase the cluster size of the SQL endpoint.",B:"They can increase the maximum bound of the SQL endpoint's scaling range.",C:"They can turn on the Auto Stop feature for the SQL endpoint.",D:"They can turn on the Serverless feature for the SQL endpoint."},correct:"B",topic:"Compute"},
+  {q:"Which query is performing a streaming hop from raw data to a Bronze table?",opts:{A:"spark.table(\"sales\").withColumn(\"avgPrice\", col(\"sales\")/col(\"units\")).writeStream.option(\"checkpointLocation\", checkpointPath).outputMode(\"append\").table(\"newSales\")",B:"spark.readStream.load(rawSalesLocation).writeStream.option(\"checkpointLocation\", checkpointPath).outputMode(\"append\").table(\"newSales\")",C:"spark.read.load(rawSalesLocation).write.mode(\"append\")",D:"spark.table(\"sales\").groupBy(\"store\").agg(sum(\"sales\")).writeStream.option(\"checkpointLocation\", checkpointPath).outputMode(\"complete\").table(\"newSales\")"},correct:"B",topic:"Streaming"},
+  {q:"Which of the following describes a scenario in which a data team will want to utilize cluster pools?",opts:{A:"An automated report needs to be refreshed as quickly as possible.",B:"An automated report needs to be made reproducible.",C:"An automated report needs to be tested to identify errors.",D:"An automated report needs to be version-controlled across multiple collaborators.",E:"An automated report needs to be runnable by all stakeholders."},correct:"A",topic:"Compute"},
+  {q:"A data engineer has developed a data pipeline to ingest data from a JSON source using Auto Loader without any type inference or schema hints. All columns in the target table are of the string type despite some fields only including float or Boolean values. Why has Auto Loader inferred all columns to be of the string type?",opts:{A:"There was a type mismatch between the specific schema and the inferred schema",B:"JSON data is a text-based format",C:"Auto Loader only works with string data",D:"All of the fields had at least one null value",E:"Auto Loader cannot infer the schema of ingested data"},correct:"B",topic:"Streaming"},
+  {q:"What is a benefit of the Databricks Lakehouse Architecture embracing open source technologies?",opts:{A:"Avoiding vendor lock-in",B:"Simplified governance",C:"Ability to scale workloads",D:"Cloud-specific integrations"},correct:"A",topic:"Architecture"},
+  {q:"What is the maximum output supported by a job cluster to ensure a notebook does not fail?",opts:{A:"10MBs",B:"15MBs",C:"25MBs",D:"30MBs"},correct:"B",topic:"Compute"},
+  {q:"A single Job runs two notebooks as two separate tasks. One of the notebooks is running slowly in the Job's current run. Which approach can the tech lead use to identify why the notebook is running slowly?",opts:{A:"They can navigate to the Runs tab in the Jobs UI to immediately review the processing notebook.",B:"They can navigate to the Tasks tab in the Jobs UI and click on the active run to review the processing notebook.",C:"They can navigate to the Runs tab in the Jobs UI and click on the active run to review the processing notebook.",D:"There is no way to determine why a Job task is running slowly.",E:"They can navigate to the Tasks tab in the Jobs UI to immediately review the processing notebook."},correct:"C",topic:"Jobs"},
+  {q:"A Delta Live Table pipeline includes two STREAMING LIVE TABLE datasets and three LIVE TABLE datasets. The pipeline runs in Production mode using Continuous Pipeline Mode. What is the expected outcome after clicking Start?",opts:{A:"All datasets will be updated at set intervals until the pipeline is shut down. The compute resources will persist to allow for additional testing.",B:"All datasets will be updated once and the pipeline will persist without any processing. The compute resources will persist but go unused.",C:"All datasets will be updated at set intervals until the pipeline is shut down. The compute resources will be deployed for the update and terminated when the pipeline is stopped.",D:"All datasets will be updated once and the pipeline will shut down. The compute resources will be terminated.",E:"All datasets will be updated once and the pipeline will shut down. The compute resources will persist to allow for additional testing."},correct:"C",topic:"DLT"},
+  {q:"A Data Engineer needs to create a parquet bronze table and wants to ensure that it gets stored in a specific path in an external location. Which table can be created in this scenario?",opts:{A:"An external table where the location is pointing to specific path in external location.",B:"An external table where the schema has managed location pointing to specific path in external location.",C:"A managed table where the catalog has managed location pointing to specific path in external location.",D:"A managed table where the location is pointing to specific path in external location."},correct:"A",topic:"SQL"},
+  {q:"A data engineer has created an ETL pipeline using Delta Live Table. They want to ensure that if location details have not been provided by the employee, the pipeline needs to be terminated. How can the scenario be implemented?",opts:{A:"CONSTRAINT valid_location EXPECT (location = NULL)",B:"CONSTRAINT valid_location EXPECT (location != NULL) ON VIOLATION FAIL UPDATE",C:"CONSTRAINT valid_location EXPECT (location != NULL) ON DROP ROW",D:"CONSTRAINT valid_location EXPECT (location != NULL) ON VIOLATION FAIL"},correct:"B",topic:"DLT"},
+  {q:"A data engineer has been provided usage permissions on the catalog and schema. In order to access a view created by the sales team using a shared cluster, what are the minimum permissions the data engineer would require in addition?",opts:{A:"Needs SELECT permission on the VIEW and the underlying TABLE.",B:"Needs SELECT permission only on the VIEW",C:"Needs ALL PRIVILEGES on the VIEW",D:"Needs ALL PRIVILEGES at the SCHEMA level"},correct:"B",topic:"Governance"},
+  {q:"A data engineer needs to create a Python function to add two integers together and return the sum. Which code block can the data engineer use to complete this task?",opts:{A:"function add_integers(x, y): return x + y",B:"def add_integers(x, y): print(x + y)",C:"def add_integers(x, y): x + y",D:"def add_integers(x, y): return x + y"},correct:"D",topic:"Python"},
+  {q:"Which of the following describes a benefit of a data lakehouse that is unavailable in a traditional data warehouse?",opts:{A:"A data lakehouse provides a relational system of data management.",B:"A data lakehouse captures snapshots of data for version control purposes.",C:"A data lakehouse couples storage and compute for complete control.",D:"A data lakehouse utilizes proprietary storage formats for data.",E:"A data lakehouse enables both batch and streaming analytics."},correct:"E",topic:"Architecture"},
+  {q:"Which of the following locations hosts the driver and worker nodes of a Databricks-managed cluster?",opts:{A:"Data plane",B:"Control plane",C:"Databricks Filesystem",D:"JDBC data source",E:"Databricks web application"},correct:"A",topic:"Architecture"},
+  {q:"A data architect is designing a data model that works for both video-based machine learning workloads and highly audited batch ETL/ELT workloads. Which of the following describes how using a data lakehouse can help the data architect meet the needs of both workloads?",opts:{A:"A data lakehouse requires very little data modelling.",B:"A data lakehouse combines compute and storage for simple governance.",C:"A data lakehouse provides autoscaling for compute clusters.",D:"A data lakehouse stores unstructured data and is ACID-compliant.",E:"A data lakehouse fully exists in the cloud."},correct:"D",topic:"Architecture"},
+  {q:"Which of the following describes a scenario in which a data engineer will want to use a Job cluster instead of an all-purpose cluster?",opts:{A:"An ad-hoc analytics report needs to be developed while minimizing compute costs.",B:"A data team needs to collaborate on the development of a machine learning model.",C:"An automated workflow needs to be run every 30 minutes.",D:"A Databricks SQL query needs to be scheduled for upward reporting.",E:"A data engineer needs to manually investigate a production error."},correct:"C",topic:"Compute"},
+  {q:"A data engineer has created a Delta table. Downstream data analysts now need SELECT permission on the table. Assuming the data engineer is the Delta table owner, which part of the Databricks Lakehouse Platform can the data engineer use to grant the data analysts the appropriate access?",opts:{A:"Repos",B:"Jobs",C:"Data Explorer",D:"Databricks Filesystem",E:"Dashboards"},correct:"C",topic:"Governance"},
+  {q:"Two junior data engineers are authoring separate parts of a single data pipeline notebook on separate Git branches. A senior data engineer suggests there is a better alternative for this type of collaboration. Which of the following supports the senior data engineer's claim?",opts:{A:"Databricks Notebooks support automatic change-tracking and versioning",B:"Databricks Notebooks support real-time co-authoring on a single notebook",C:"Databricks Notebooks support commenting and notification comments",D:"Databricks Notebooks support the use of multiple languages in the same notebook",E:"Databricks Notebooks support the creation of interactive data visualizations"},correct:"B",topic:"Architecture"},
+  {q:"Which of the following describes how Databricks Repos can help facilitate CI/CD workflows on the Databricks Lakehouse Platform?",opts:{A:"Databricks Repos can facilitate the pull request, review, and approval process before merging branches",B:"Databricks Repos can merge changes from a secondary Git branch into a main Git branch",C:"Databricks Repos can be used to design, develop, and trigger Git automation pipelines",D:"Databricks Repos can store the single-source-of-truth Git repository",E:"Databricks Repos can commit or push code changes to trigger a CI/CD process"},correct:"E",topic:"Architecture"},
+  {q:"Which of the following statements describes Delta Lake?",opts:{A:"Delta Lake is an open source analytics engine used for big data workloads.",B:"Delta Lake is an open format storage layer that delivers reliability, security, and performance.",C:"Delta Lake is an open source platform to help manage the complete machine learning lifecycle.",D:"Delta Lake is an open source data storage format for distributed data.",E:"Delta Lake is an open format storage layer that processes data."},correct:"B",topic:"Delta Lake"},
+  {q:"Which SQL DDL command creates an empty Delta table in a given format regardless of whether a table already exists with this name?",opts:{A:"CREATE OR REPLACE TABLE table_name (employeeId STRING, startDate DATE, avgRating FLOAT)",B:"CREATE OR REPLACE TABLE table_name WITH COLUMNS (employeeId STRING, startDate DATE, avgRating FLOAT) USING DELTA",C:"CREATE TABLE IF NOT EXISTS table_name (employeeId STRING, startDate DATE, avgRating FLOAT)",D:"CREATE TABLE table_name AS SELECT employeeId STRING, startDate DATE, avgRating FLOAT"},correct:"A",topic:"SQL"},
+  {q:"Which of the following SQL keywords can be used to append new rows to an existing Delta table?",opts:{A:"UPDATE",B:"COPY",C:"INSERT INTO",D:"DELETE",E:"UNION"},correct:"C",topic:"SQL"},
+  {q:"A data engineering team needs to query a Delta table to extract rows that meet the same condition. The rows meeting the condition are sparsely located throughout each of the data files. Which optimization technique could speed up the query?",opts:{A:"Data skipping",B:"Z-Ordering",C:"Bin-packing",D:"Write as a Parquet file",E:"Tuning the file size"},correct:"B",topic:"Optimization"},
+  {q:"A data engineer needs to create a database called customer360 at the location /customer/customer360. The data engineer is unsure if one of their colleagues has already created the database. Which of the following commands should the data engineer run?",opts:{A:"CREATE DATABASE customer360 LOCATION '/customer/customer360';",B:"CREATE DATABASE IF NOT EXISTS customer360;",C:"CREATE DATABASE IF NOT EXISTS customer360 LOCATION '/customer/customer360';",D:"CREATE DATABASE IF NOT EXISTS customer360 DELTA LOCATION '/customer/customer360';",E:"CREATE DATABASE customer360 DELTA LOCATION '/customer/customer360';"},correct:"C",topic:"SQL"},
+  {q:"A junior data engineer needs to create a Spark SQL table my_table for which Spark manages both the data and the metadata. The metadata and data should also be stored in the Databricks Filesystem (DBFS). Which of the following commands should a senior data engineer share?",opts:{A:"CREATE TABLE my_table (id STRING, value STRING) USING org.apache.spark.sql.parquet OPTIONS (PATH \"storage-path\");",B:"CREATE MANAGED TABLE my_table (id STRING, value STRING) USING org.apache.spark.sql.parquet OPTIONS (PATH \"storage-path\");",C:"CREATE MANAGED TABLE my_table (id STRING, value STRING);",D:"CREATE TABLE my_table (id STRING, value STRING) USING DBFS;",E:"CREATE TABLE my_table (id STRING, value STRING);"},correct:"E",topic:"SQL"},
+  {q:"A data engineer wants to create a relational object by pulling data from two tables. The relational object must be used by other data engineers in other sessions. The data engineer wants to avoid copying and storing physical data. Which relational object should the data engineer create?",opts:{A:"View",B:"Temporary view",C:"Delta Table",D:"Database",E:"Spark SQL Table"},correct:"A",topic:"SQL"},
+  {q:"A data engineer wants to create a data entity from a couple of tables. The data entity must be used by other data engineers in other sessions and must be saved to a physical location. Which of the following data entities should the data engineer create?",opts:{A:"View",B:"Temporary view",C:"Function",D:"Database",E:"Table"},correct:"E",topic:"SQL"},
+  {q:"A senior data engineer creates a new table from customerLocations using CREATE TABLE customersPerCountry AS SELECT country, COUNT(*) AS customers FROM customerLocations GROUP BY country. A junior data engineer asks why the schema is not being declared. Which response explains why declaring the schema is not necessary?",opts:{A:"CREATE TABLE AS SELECT statements adopt schema details from the source table and query.",B:"CREATE TABLE AS SELECT statements infer the schema by scanning the data.",C:"CREATE TABLE AS SELECT statements result in tables where schemas are optional.",D:"CREATE TABLE AS SELECT statements assign all columns the type STRING.",E:"CREATE TABLE AS SELECT statements result in tables that do not support schemas."},correct:"A",topic:"SQL"},
+  {q:"A data engineer is overwriting data in a table by deleting and recreating it. Another engineer suggests overwriting instead. Which reason to overwrite the table instead of deleting and recreating it is INCORRECT?",opts:{A:"Overwriting a table is efficient because no files need to be deleted.",B:"Overwriting a table results in a clean table history for logging and audit purposes.",C:"Overwriting a table maintains the old version of the table for Time Travel.",D:"Overwriting a table is an atomic operation and will not leave the table in an unfinished state.",E:"Overwriting a table allows for concurrent queries to be completed while in progress."},correct:"B",topic:"Delta Lake"},
+  {q:"A data analyst wants the data engineering team to run a query every day where the date in the table name (e.g., store_sales_20220101) is automatically replaced with the current date. Which approach could be used to efficiently automate this process?",opts:{A:"They could wrap the query using PySpark and use Python's string variable system to automatically update the table name.",B:"They could manually replace the date within the table name with the current day's date.",C:"They could request that the data analyst rewrites the query to be run less frequently.",D:"They could replace the string-formatted date in the table with a timestamp-formatted date.",E:"They could pass the table into PySpark and develop a robustly tested module on the existing query."},correct:"A",topic:"Python"},
+  {q:"Which of the following can be used to simplify and unify siloed data architectures that are specialized for specific use cases?",opts:{A:"None of these",B:"Data lake",C:"Data warehouse",D:"All of these",E:"Data lakehouse"},correct:"E",topic:"Architecture"},
+  {q:"A data engineer needs to identify which files are new since the previous pipeline run in a shared directory that accumulates files. Which tool can solve this problem?",opts:{A:"Databricks SQL",B:"Delta Lake",C:"Unity Catalog",D:"Data Explorer",E:"Auto Loader"},correct:"E",topic:"Streaming"},
+  {q:"Which of the following data workloads will utilize a Bronze table as its source?",opts:{A:"A job that aggregates cleaned data to create standard summary statistics",B:"A job that queries aggregated data to publish key insights into a dashboard",C:"A job that ingests raw data from a streaming source into the Lakehouse",D:"A job that develops a feature set for a machine learning application",E:"A job that enriches data by parsing its timestamps into a human-readable format"},correct:"E",topic:"Medallion"},
+  {q:"Which of the following data workloads will utilize a Silver table as its source?",opts:{A:"A job that enriches data by parsing its timestamps into a human-readable format",B:"A job that queries aggregated data that already feeds into a dashboard",C:"A job that ingests raw data from a streaming source into the Lakehouse",D:"A job that aggregates cleaned data to create standard summary statistics",E:"A job that cleans data by removing malformatted records"},correct:"D",topic:"Medallion"},
+  {q:"Which of the following data workloads will utilize a Gold table as its source?",opts:{A:"A job that enriches data by parsing its timestamps into a human-readable format",B:"A job that aggregates uncleaned data to create standard summary statistics",C:"A job that cleans data by removing malformatted records",D:"A job that queries aggregated data designed to feed into a dashboard",E:"A job that ingests raw data from a streaming source into the Lakehouse"},correct:"D",topic:"Medallion"},
+  {q:"Which of the following benefits does Delta Live Tables provide for ELT pipelines over standard data pipelines that utilize Spark and Delta Lake on Databricks?",opts:{A:"The ability to declare and maintain data table dependencies",B:"The ability to write pipelines in Python and/or SQL",C:"The ability to access previous versions of data tables",D:"The ability to automatically scale compute resources",E:"The ability to perform batch and streaming queries"},correct:"A",topic:"DLT"},
+  {q:"A data engineer has three notebooks in an ELT pipeline that need to be executed in a specific order. The data engineer would like to use Delta Live Tables to manage this process. Which of the following steps must the data engineer take as part of implementing this pipeline using Delta Live Tables?",opts:{A:"They need to create a Delta Live Tables pipeline from the Data page.",B:"They need to create a Delta Live Tables pipeline from the Jobs page.",C:"They need to create a Delta Live Tables pipeline from the Compute page.",D:"They need to refactor their notebook to use Python and the dlt library.",E:"They need to refactor their notebook to use SQL and CREATE LIVE TABLE keyword."},correct:"B",topic:"DLT"},
+  {q:"A dataset has been defined using Delta Live Tables with an expectations clause: CONSTRAINT valid_timestamp EXPECT (timestamp > '2020-01-01'). What is the expected behavior when data violating this constraint is processed?",opts:{A:"Records that violate the expectation are added to the target dataset and recorded as invalid in the event log.",B:"Records that violate the expectation are dropped from the target dataset and recorded as invalid in the event log.",C:"Records that violate the expectation cause the job to fail.",D:"Records that violate the expectation are added to the target dataset and flagged as invalid in a field added to the target dataset.",E:"Records that violate the expectation are dropped from the target dataset and loaded into a quarantine table."},correct:"A",topic:"DLT"},
+  {q:"A dataset has been defined using Delta Live Tables with an expectations clause: CONSTRAINT valid_timestamp EXPECT (timestamp > '2020-01-01') ON VIOLATION DROP ROW. What is the expected behavior when a batch of data containing violations is processed?",opts:{A:"Records that violate the expectation are added to the target dataset and recorded as invalid in the event log.",B:"Records that violate the expectation are dropped from the target dataset and recorded as invalid in the event log.",C:"Records that violate the expectation cause the job to fail.",D:"Records that violate the expectation are added to the target dataset and flagged as invalid in a field added to the target dataset.",E:"Records that violate the expectation are dropped from the target dataset and loaded into a quarantine table."},correct:"B",topic:"DLT"},
+  {q:"A data engineer wants to schedule their Databricks SQL dashboard to refresh once per day, but they only want the associated SQL endpoint to be running when it is necessary. Which approach can the data engineer use to minimize the total running time of the SQL endpoint?",opts:{A:"They can ensure the dashboard's SQL endpoint matches each of the queries' SQL endpoints",B:"They can set up the dashboard's SQL endpoint to be serverless.",C:"They can turn on the Auto Stop feature for the SQL endpoint.",D:"They can reduce the cluster size of the SQL endpoint.",E:"They can ensure the dashboard's SQL endpoint is not one of the included query's SQL endpoints."},correct:"C",topic:"Jobs"},
+  {q:"A data engineer has a Job with multiple tasks that runs nightly. Each of the tasks runs slowly because the clusters take a long time to start. Which action can the data engineer perform to improve the start-up time for the clusters?",opts:{A:"They can use endpoints available in Databricks SQL",B:"They can use jobs clusters instead of all-purpose clusters",C:"They can configure the clusters to be single-node",D:"They can use clusters that are from a cluster pool",E:"They can configure the clusters to auto scale for larger data sizes"},correct:"D",topic:"Compute"},
+  {q:"A new data engineering team needs full privileges on the database customers to fully manage the project. Which of the following commands can be used to grant full permissions on the database to the new data engineering team?",opts:{A:"GRANT USAGE ON DATABASE customers TO team;",B:"GRANT ALL PRIVILEGES ON DATABASE team TO customers;",C:"GRANT SELECT PRIVILEGES ON DATABASE customers TO teams;",D:"GRANT SELECT CREATE MODIFY USAGE PRIVILEGES ON DATABASE customers TO team;",E:"GRANT ALL PRIVILEGES ON DATABASE customers TO team;"},correct:"E",topic:"SQL"},
+  {q:"A new data engineering team needs full privileges on the table sales to fully manage the project. Which of the following commands can be used to grant full permissions on the table?",opts:{A:"GRANT ALL PRIVILEGES ON TABLE sales TO team;",B:"GRANT SELECT CREATE MODIFY ON TABLE sales TO team;",C:"GRANT SELECT ON TABLE sales TO team;",D:"GRANT USAGE ON TABLE sales TO team;",E:"GRANT ALL PRIVILEGES ON TABLE team TO sales;"},correct:"A",topic:"SQL"},
+  {q:"A new data engineering team needs access to database customers in order to see what tables already exist. Which of the following commands can be used to grant the necessary permission on the database?",opts:{A:"GRANT VIEW ON CATALOG customers TO team;",B:"GRANT CREATE ON DATABASE customers TO team;",C:"GRANT USAGE ON CATALOG team TO customers;",D:"GRANT CREATE ON DATABASE team TO customers;",E:"GRANT USAGE ON DATABASE customers TO team;"},correct:"E",topic:"SQL"},
+  {q:"Which of the following data lakehouse features results in improved data quality over a traditional data lake?",opts:{A:"A data lakehouse provides storage solutions for structured and unstructured data.",B:"A data lakehouse supports ACID-compliant transactions.",C:"A data lakehouse allows the use of SQL queries to examine data.",D:"A data lakehouse stores data in open formats.",E:"A data lakehouse enables machine learning and artificial Intelligence workloads."},correct:"B",topic:"Architecture"},
+  {q:"Which of the following is an advantage of using Databricks Repos over the Databricks Notebooks versioning?",opts:{A:"Databricks Repos automatically saves development progress",B:"Databricks Repos supports the use of multiple branches",C:"Databricks Repos allows users to revert to previous versions of a notebook",D:"Databricks Repos provides the ability to comment on specific changes",E:"Databricks Repos is wholly housed within the Databricks Lakehouse Platform"},correct:"B",topic:"Architecture"},
+  {q:"A data analyst has created a Delta table 'sales'. The data engineering team uses Python for its tests. Which of the following commands could the data engineering team use to access 'sales' in PySpark?",opts:{A:"SELECT FROM sales",B:"There is no way to share data between PySpark and SQL.",C:"spark.sql(\"sales\")",D:"spark.delta.table(\"sales\")",E:"spark.table(\"sales\")"},correct:"E",topic:"Python"},
+  {q:"Which commands can be used to write data into a Delta table while avoiding the writing of duplicate records?",opts:{A:"DROP",B:"IGNORE",C:"MERGE",D:"APPEND",E:"INSERT"},correct:"C",topic:"Delta Lake"},
+  {q:"A data engineer runs a statement daily to copy the previous day's sales using COPY INTO transactions FROM \"/transactions/raw\" FILEFORMAT = PARQUET. The data engineer notices the number of records has not changed after running the command today. Why might the statement not have copied any new records?",opts:{A:"The format of the files to be copied were not included with the FORMAT_OPTIONS keyword.",B:"The names of the files to be copied were not included with the FILES keyword.",C:"The previous day's file has already been copied into the table.",D:"The PARQUET file format does not support COPY INTO.",E:"The COPY INTO statement requires the table to be refreshed to view the copied rows."},correct:"C",topic:"Delta Lake"},
+  {q:"A data engineer runs DROP TABLE IF EXISTS my_table. While the object no longer appears when they run SHOW TABLES, the data files still exist. Which of the following describes why the data files still exist and the metadata files were deleted?",opts:{A:"The table's data was larger than 10 GB",B:"The table's data was smaller than 10 GB",C:"The table was external",D:"The table did not have a location",E:"The table was managed"},correct:"C",topic:"SQL"},
+  {q:"A data engineer would like to automate the process of monitoring the quality level of ingested data. Which of the following tools can the data engineer use to solve this problem?",opts:{A:"Unity Catalog",B:"Data Explorer",C:"Delta Lake",D:"Delta Live Tables",E:"Auto Loader"},correct:"D",topic:"DLT"},
+  {q:"In order for Structured Streaming to reliably track the exact progress of the processing, which two approaches does Spark use to record the offset range of data being processed in each trigger?",opts:{A:"Checkpointing and Write-ahead Logs",B:"Checkpointing and Idempotent Sinks",C:"Structured Streaming cannot record the offset range of the data being processed in each trigger.",D:"Replayable Sources and Idempotent Sinks",E:"Write-ahead Logs and Idempotent Sinks"},correct:"A",topic:"Streaming"},
+  {q:"Which of the following describes the relationship between Gold tables and Silver tables?",opts:{A:"Gold tables are more likely to contain aggregations than Silver tables.",B:"Gold tables are more likely to contain valuable data than Silver tables.",C:"Gold tables are more likely to contain a less refined view of data than Silver tables.",D:"Gold tables are more likely to contain more data than Silver tables.",E:"Gold tables are more likely to contain truthful data than Silver tables."},correct:"A",topic:"Medallion"},
+  {q:"Which of the following describes the relationship between Bronze tables and raw data?",opts:{A:"Bronze tables contain less data than raw data files.",B:"Bronze tables contain more truthful data than raw data.",C:"Bronze tables contain aggregates while raw data is unaggregated.",D:"Bronze tables contain a less refined view of data than raw data.",E:"Bronze tables contain raw data with a schema applied."},correct:"E",topic:"Medallion"},
+  {q:"Which of the following statements regarding the relationship between Silver tables and Bronze tables is always true?",opts:{A:"Silver tables contain a less refined, less clean view of data than Bronze data.",B:"Silver tables contain aggregates while Bronze data is unaggregated.",C:"Silver tables contain more data than Bronze tables.",D:"Silver tables contain less data than Bronze tables.",E:"Silver tables contain a more refined and cleaner view of data than Bronze tables."},correct:"E",topic:"Medallion"},
+  {q:"A data engineer has configured a Structured Streaming job. The data engineer only wants the query to execute a micro-batch to process data every 5 seconds. Which line of code should the data engineer use?",opts:{A:"trigger(\"5 seconds\")",B:"trigger()",C:"trigger(once = \"5 seconds\")",D:"trigger(processingTime = \"5 seconds\")",E:"trigger(continuous = \"5 seconds\")"},correct:"D",topic:"Streaming"},
+  {q:"A data engineer runs DROP TABLE IF EXISTS my_table. After running this command, the engineer notices that the data files and metadata files have both been deleted from the file system. What is the reason behind the deletion of all these files?",opts:{A:"The table was managed",B:"The table's data was smaller than 10 GB",C:"The table did not have a location",D:"The table was external",E:"The table's data was larger than 10 GB"},correct:"A",topic:"SQL"},
+  {q:"Which of the following describes a benefit of creating an external table from Parquet rather than CSV when using a CREATE TABLE AS SELECT statement?",opts:{A:"Parquet files can be partitioned",B:"CREATE TABLE AS SELECT statements cannot be used on files",C:"Parquet files have a well-defined schema",D:"Parquet files have the ability to be optimized",E:"Parquet files will become Delta tables"},correct:"C",topic:"Delta Lake"},
+  {q:"When should the CREATE STREAMING LIVE TABLE syntax be used over the CREATE LIVE TABLE syntax when creating Delta Live Tables (DLT) tables?",opts:{A:"CREATE STREAMING LIVE TABLE should be used when the subsequent step in the DLT pipeline is static.",B:"CREATE STREAMING LIVE TABLE should be used when data needs to be processed incrementally.",C:"CREATE STREAMING LIVE TABLE is redundant for DLT and it does not need to be used.",D:"CREATE STREAMING LIVE TABLE should be used when data needs to be processed through complicated aggregations.",E:"CREATE STREAMING LIVE TABLE should be used when the previous step in the DLT pipeline is static."},correct:"B",topic:"DLT"},
+  {q:"A data engineer has three tables in a DLT pipeline configured to drop invalid records. They notice that some data is being dropped and would like to determine at which table the data is being dropped. Which approach can the data engineer take?",opts:{A:"They can Auto Load DLT pipeline.",B:"They cannot determine which table is dropping the records.",C:"They can set up DLT to notify them via email when records are dropped.",D:"They can navigate to the DLT pipeline page, click on each table, and view the data quality statistics.",E:"They can navigate to the DLT pipeline page, click on the 'Error' button, and review the present errors."},correct:"D",topic:"DLT"},
+  {q:"A data engineer creates a database using CREATE DATABASE IF NOT EXISTS customer360. In which of the following locations will the customer360 database be located?",opts:{A:"dbfs:/user/hive/database/customer360",B:"dbfs:/user/hive/warehouse",C:"dbfs:/user/hive/customer360",D:"More information is needed to determine the correct response",E:"dbfs:/user/hive/database"},correct:"B",topic:"SQL"},
+  {q:"A data engineer and analyst are migrating their pipeline (Python for raw/bronze/silver, SQL for gold, streaming source) to Delta Live Tables. Which changes will need to be made to the pipeline when migrating?",opts:{A:"None of these changes will need to be made",B:"The pipeline will need to stop using the medallion-based multi-hop architecture",C:"The pipeline will need to be written entirely in SQL",D:"The pipeline will need to use a batch source in place of a streaming source",E:"The pipeline will need to be written entirely in Python"},correct:"A",topic:"DLT"},
+  {q:"A data engineer has realized that the data files associated with a Delta table are incredibly small. They want to compact the small files to form larger files to improve performance. Which keyword can be used to compact the small files?",opts:{A:"OPTIMIZE",B:"VACUUM",C:"COMPACTION",D:"REPARTITION"},correct:"A",topic:"Optimization"},
+  {q:"A data engineer needs to use a Delta table as part of a data pipeline, but they do not know if they have the appropriate permissions. In which location can the data engineer review their permissions on the table?",opts:{A:"Jobs",B:"Dashboards",C:"Catalog Explorer",D:"Repos",E:"Databricks File system",F:"Data Explorer"},correct:"C",topic:"Governance"},
+  {q:"Which file format is used for storing Delta Lake Table data?",opts:{A:"CSV",B:"Parquet",C:"JSON",D:"Delta"},correct:"B",topic:"Delta Lake"},
+  {q:"In which of the following file formats is data from Delta Lake tables primarily stored?",opts:{A:"Delta",B:"CSV",C:"Parquet",D:"JSON",E:"A proprietary, optimized format specific to Databricks"},correct:"C",topic:"Delta Lake"},
+  {q:"A data engineer needs to sync their Databricks Repo to get changes from the central Git repository. Which Git operation does the data engineer need to run to accomplish this task?",opts:{A:"Clone",B:"Pull",C:"Merge",D:"Push"},correct:"B",topic:"Architecture"},
+  {q:"A data engineer has been given a new record (id='a1', rank=6, rating=9.4). Which SQL commands can be used to append the new record to an existing Delta table my_table?",opts:{A:"INSERT INTO my_table VALUES ('a1', 6, 9.4)",B:"INSERT VALUES ('a1', 6, 9.4) INTO my_table",C:"UPDATE my_table VALUES ('a1', 6, 9.4)",D:"UPDATE VALUES ('a1', 6, 9.4) my_table"},correct:"A",topic:"SQL"},
+  {q:"A data engineer needs to create a table in Databricks using data from a CSV file. They run CREATE TABLE new_table OPTIONS (header = \"true\", delimiter = \"|\") LOCATION \"path/to/csv\". Which line of code fills in the blank to complete the task?",opts:{A:"FROM \"path/to/csv\"",B:"USING CSV",C:"FROM CSV",D:"USING DELTA"},correct:"B",topic:"SQL"},
+  {q:"Which of the following is hosted completely in the control plane of the classic Databricks architecture?",opts:{A:"Worker node",B:"JDBC data source",C:"Databricks web application",D:"Databricks Filesystem",E:"Driver node"},correct:"C",topic:"Architecture"},
+  {q:"Which of the following SQL keywords can be used to convert a table from a long format to a wide format?",opts:{A:"PIVOT",B:"CONVERT",C:"WHERE",D:"TRANSFORM",E:"SUM"},correct:"A",topic:"SQL"},
+  {q:"A data engineer needs to apply custom logic to identify employees with more than 5 years of experience in array column 'employees' in table 'stores'. Which code block successfully completes this task using the FILTER higher-order function?",opts:{A:"SELECT store_id, employees, FILTER(employees, i -> i.years_exp > 5) AS exp_employees FROM stores;",B:"SELECT store_id, employees, FILTER(exp_employees, years_exp > 5) AS exp_employees FROM stores;",C:"SELECT store_id, employees, FILTER(employees, years_exp > 5) AS exp_employees FROM stores;",D:"SELECT store_id, employees, FILTER(exp_employees, i -> i.years_exp > 5) AS exp_employees"},correct:"A",topic:"SQL"},
+  {q:"A data engineer has a Python variable table_name that they would like to use in a SQL query: (f\"SELECT customer_id, spend FROM {table_name}\"). What can be used to fill in the blank to successfully complete the task?",opts:{A:"spark.delta.sql",B:"spark.sql",C:"spark.table",D:"dbutils.sql"},correct:"B",topic:"Python"},
+  {q:"An engineering manager uses a Databricks SQL query to monitor their team's progress. They are manually rerunning the query each day. Which of the following approaches can the manager use to ensure the results are updated each day?",opts:{A:"They can schedule the query to run every 1 day from the Jobs UI.",B:"They can schedule the query to refresh every 1 day from the query's page in Databricks SQL.",C:"They can schedule the query to run every 12 hours from the Jobs UI.",D:"They can schedule the query to refresh every 1 day from the SQL endpoint's page in Databricks SQL.",E:"They can schedule the query to refresh every 12 hours from the SQL endpoint's page in Databricks SQL."},correct:"B",topic:"Jobs"},
+  {q:"Which of the following tools is used by Auto Loader to process data incrementally?",opts:{A:"Checkpointing",B:"Spark Structured Streaming",C:"Data Explorer",D:"Unity Catalog",E:"Databricks SQL"},correct:"B",topic:"Streaming"},
+  {q:"Differentiate between all-purpose clusters and job clusters. A data engineering team has created a Python notebook to load data from cloud storage, this job has been tested and now needs to be scheduled in production. Which cluster would be best?",opts:{A:"All purpose cluster",B:"Any Unity Catalog-enabled cluster",C:"Jobs Cluster",D:"Serverless SQL warehouse"},correct:"C",topic:"Compute"},
+  {q:"A data organization leader is upset about the data analysis team's reports being different from the data engineering team's reports. The leader believes the siloed nature of their organization's data engineering and data analysis architectures is to blame. Which of the following describes how a data lakehouse could alleviate this issue?",opts:{A:"Both teams would autoscale their work as data size evolves",B:"Both teams would use the same source of truth for their work",C:"Both teams would reorganize to report to the same department",D:"Both teams would be able to collaborate on projects in real-time",E:"Both teams would respond more quickly to ad-hoc requests"},correct:"B",topic:"Architecture"},
+  {q:"A data engineer has set up two Jobs that each run nightly. The second Job depends on the first, and sometimes the second Job fails when the first Job doesn't complete in time. Which of the following approaches can the data engineer use to avoid this problem?",opts:{A:"They can utilize multiple tasks in a single job with a linear dependency",B:"They can use cluster pools to help the Jobs run more efficiently",C:"They can set up a retry policy on the first Job to help it run more quickly",D:"They can limit the size of the output in the second Job so that it will not fail as easily",E:"They can set up the data to stream from the first Job to the second Job"},correct:"A",topic:"Jobs"},
+  {q:"A data engineer's manager wants to version control the Job's schedule. Which of the following approaches can the data engineer use to obtain a version-controllable configuration of the Job's schedule?",opts:{A:"They can link the Job to notebooks that are a part of a Databricks Repo.",B:"They can submit the Job once on a Job cluster.",C:"They can download the JSON description of the Job from the Job's page.",D:"They can submit the Job once on an all-purpose cluster.",E:"They can download the XML description of the Job from the Job's page."},correct:"C",topic:"Jobs"},
+  {q:"A data engineer has a single-task Job. They need to set up another task to run a new notebook prior to the original task. Which of the following approaches can the data engineer use to set up the new task?",opts:{A:"They can clone the existing task in the existing Job and update it to run the new notebook.",B:"They can create a new task in the existing Job and then add it as a dependency of the original task.",C:"They can create a new task in the existing Job and then add the original task as a dependency of the new task.",D:"They can create a new job from scratch and add both tasks to run concurrently.",E:"They can clone the existing task to a new Job and then edit it to run the new notebook."},correct:"C",topic:"Jobs"},
+  {q:"A Delta Live Table pipeline includes two STREAMING LIVE TABLE datasets and three LIVE TABLE datasets. The table is configured to run in Development mode using the Triggered Pipeline Mode. What is the expected outcome after clicking Start?",opts:{A:"All datasets will be updated once and the pipeline will shut down. The compute resources will be terminated.",B:"All datasets will be updated at set intervals until the pipeline is shut down. The compute resources will be deployed for the update and terminated when the pipeline is stopped.",C:"All datasets will be updated at set intervals until the pipeline is shut down. The compute resources will persist after the pipeline is stopped to allow for additional testing.",D:"All datasets will be updated once and the pipeline will shut down. The compute resources will persist to allow for additional testing.",E:"All datasets will be updated continuously and the pipeline will not shut down. The compute resources will persist with the pipeline."},correct:"D",topic:"DLT"},
+  {q:"A data engineer has a Job with multiple tasks that runs nightly. One of the tasks unexpectedly fails during 10% of the runs. Which action can the data engineer perform to ensure the Job completes each night while minimizing compute costs?",opts:{A:"They can institute a retry policy for the entire Job",B:"They can observe the task as it runs to try and determine why it is failing",C:"They can set up the Job to run multiple times ensuring that at least one will complete",D:"They can institute a retry policy for the task that periodically fails",E:"They can utilize a Jobs cluster for each of the tasks in the Job"},correct:"D",topic:"Jobs"},
+  {q:"Which of the following statements about a refresh schedule is INCORRECT?",opts:{A:"A query can be refreshed anywhere from 1 minute to 2 weeks.",B:"Refresh schedules can be configured in the Query Editor.",C:"A query being refreshed on a schedule does not use a SQL Warehouse (formerly known as SQL Endpoint).",D:"A refresh schedule is not the same as an alert.",E:"You must have workspace administrator privileges to configure a refresh schedule."},correct:"C",topic:"Jobs"},
+  {q:"A data engineer needs access to a table new_table, but they do not know who the table owner is. Which of the following approaches can be used to identify the owner of new_table?",opts:{A:"Review the Permissions tab in the table's page in Data Explorer",B:"All of these options can be used to identify the owner of the table",C:"Review the Owner field in the table's page in Data Explorer",D:"Review the Owner field in the table's page in the cloud storage solution",E:"There is no way to identify the owner of the table"},correct:"C",topic:"Governance"},
+  {q:"Which of the following layers of the medallion architecture is most commonly used by data analysts?",opts:{A:"None of these layers are used by data analysts",B:"Gold",C:"All of these layers are used equally by data analysts",D:"Silver",E:"Bronze"},correct:"B",topic:"Medallion"},
+  {q:"Which of the following commands will return the location of database customer360?",opts:{A:"DESCRIBE LOCATION customer360;",B:"DROP DATABASE customer360;",C:"DESCRIBE DATABASE customer360;",D:"USE DATABASE customer360;",E:"ALTER DATABASE customer360 SET DBPROPERTIES ('location' = '/user');"},correct:"C",topic:"SQL"},
+  {q:"In which of the following scenarios should a data engineer use the MERGE INTO command instead of the INSERT INTO command?",opts:{A:"When the location of the data needs to be changed",B:"When the target table is an external table",C:"When the source table can be deleted",D:"When the target table cannot contain duplicate records",E:"When the source is not a Delta table"},correct:"D",topic:"Delta Lake"},
+  {q:"Which of the following code blocks returns a new DataFrame with a new column sqft100 that is 1/100th of column sqft in DataFrame storesDF?",opts:{A:"storesDF.withColumn(\"sqft100\", col(\"sqft\") * 100)",B:"storesDF.withColumn(\"sqft100\", sqft/100)",C:"storesDF.withColumn(col(\"sqft100\"), col(\"sqft\")/100)",D:"storesDF.withColumn(\"sqft100\", col(\"sqft\")/100)",E:"storesDF.newColumn(\"sqft100\", sqft/100)"},correct:"D",topic:"Python"},
+  {q:"A data engineer needs to parse only PNG files in a directory that contains files with different suffixes using Auto Loader. Which code should the data engineer use?",opts:{A:"df = spark.readStream.format(\"cloudFiles\").option(\"cloudFiles.format\", \"binaryFile\").load(\"/*.png\")",B:"df = spark.readStream.format(\"cloudFiles\").option(\"cloudFiles.format\", \"binaryFile\").option(\"pathGlobfilter\", \"*.png\").load(<base-path>)",C:"df = spark.readStream.format(\"cloudFiles\").option(\"cloudFiles.format\", \"binaryFile\").append().option(\"pathGlobfilter\", \"*.png\")",D:"df = spark.readStream.format(\"cloudFiles\").option(\"cloudFiles.format\", \"binaryFile\").append(\"/*.png\")"},correct:"B",topic:"Streaming"},
+  {q:"Which Databricks asset bundle format is valid?",opts:{A:"YAML format with resources, jobs, tasks, and notebook_path keys",B:"JSON format with nested job definitions",C:"Python configuration dictionary",D:"TOML configuration file with resources and tasks"},correct:"A",topic:"Jobs"},
+  {q:"A data engineer works for an organization that must meet a stringent SLA that demands minimal runtime errors and high availability. The data engineer wants to avoid the operational overhead of managing and tuning clusters. Which architectural solution will meet the requirements?",opts:{A:"Implement a hybrid approach with scheduled batch jobs on custom cloud VMs.",B:"Utilize Databricks serverless compute that automatically optimizes resources and abstracts cluster management",C:"Deploy a dedicated, manually managed cluster optimized by in-house IT staff.",D:"Use an auto-scaling cluster configured and monitored by the user."},correct:"B",topic:"Compute"},
+  {q:"A data engineer needs to combine sales data from an on-premises PostgreSQL database with customer data in Azure Synapse to avoid data duplication and ensure up-to-date information. How should the data engineer achieve this using Databricks?",opts:{A:"Develop custom ETL pipelines to ingest data into Databricks",B:"Manually synchronize data from both sources into a single database",C:"Use Lakehouse Federation to query both data sources directly",D:"Export data from both sources to CSV files and upload them to Databricks"},correct:"C",topic:"Architecture"},
+  {q:"A data engineer is tasked with building a nightly batch ETL pipeline that processes very large volumes of raw JSON logs into Delta tables for reporting. The data arrives in bulk once per day. Cost-efficiency is important, but performance and reliability are the highest priorities. Which type of Databricks cluster should the data engineer configure?",opts:{A:"An all-purpose cluster always kept running to ensure low-latency job startup times",B:"A job cluster configured to autoscale across multiple workers during the pipeline run",C:"A lightweight single-node cluster with low worker node count to reduce costs",D:"A high-concurrency cluster designed for interactive SQL workloads"},correct:"B",topic:"Compute"},
+  {q:"What is the primary function of the Silver layer in the Databricks medallion architecture?",opts:{A:"Ingest raw data in its original state",B:"Store historical data solely for auditing purposes",C:"Aggregate and enrich data for business analytics",D:"Validate, clean, and deduplicate data for further processing"},correct:"D",topic:"Medallion"},
+  {q:"A data engineer is writing a script to ingest new data from cloud storage. In the event of a Schema change, the ingestion should fail until the changes can be found and verified as intended changes. Which command will meet the requirements?",opts:{A:"failOnNewColumns",B:"none",C:"rescue",D:"addNewColumns"},correct:"A",topic:"Streaming"},
+  {q:"A data engineer manages multiple external tables linked to various data sources. The data engineer wants to manage these external tables efficiently and ensure that only the necessary permissions are granted to users. How should the data engineer manage access?",opts:{A:"Use Unity Catalog to manage access controls and permissions for each external table individually.",B:"Grant permissions on the Databricks workspace level, which will automatically apply to all external tables.",C:"Create a single user role with full access to all external tables and assign it to all users.",D:"Set up Azure Blob Storage permissions at the container level, allowing access to all external tables."},correct:"A",topic:"Governance"},
+  {q:"A data engineer is maintaining an ETL pipeline code with a GitHub repository linked to their Databricks account. The data engineer wants to deploy the ETL pipeline to production as a Databricks workflow. Which approach should the data engineer use?",opts:{A:"Manually create and manage the workflow in UI",B:"Databricks Asset Bundles (DAB) + GitHub Integration",C:"Maintain workflow_config.json and deploy it using Databricks CLI",D:"Maintain workflow_config.json and deploy it using Terraform"},correct:"B",topic:"Jobs"},
+  {q:"A departing platform owner holds ownership of multiple catalogs and controls storage credentials and external locations. A data engineer needs to transfer catalog ownership, delegate privilege management, and maintain Delta Sharing capabilities. Which role must be in place to perform these actions across the entire metastore?",opts:{A:"Account Admin - because account admins can only create metastores but cannot change ownership of catalogs.",B:"Catalog Owner - because catalog owners can transfer any object in any catalog in the metastore.",C:"Workspace Admin - because workspace admins can transfer ownership of any Unity Catalog object.",D:"Metastore Admin because metastore admins can transfer ownership and manage privileges across all metastore assets, including shares and recipients."},correct:"D",topic:"Governance"},
+  {q:"What is the structure of an Asset Bundle?",opts:{A:"A single plain text file enumerating the names of assets to be migrated to a new workspace",B:"A compressed archive (ZIP) that solely contains workspace assets without any accompanying metadata",C:"A Docker image containing runtime environments and the source code of the assets",D:"A YAML configuration file that includes the artifacts, resources, and configurations for the project"},correct:"D",topic:"Jobs"},
+  {q:"Which Databricks feature can be used to view and analyze data sources and tables used across a workspace?",opts:{A:"Do not use the lineage feature as it only tracks activity from the last 3 months.",B:"Use the lineage feature to visualize a graph that shows all dependencies, including where the table is used in notebooks, other tables, and reports.",C:"Use the lineage feature to visualize a graph that highlights where the table is used only in notebooks.",D:"Use the lineage feature to visualize a graph that highlights where the table is used only in reports."},correct:"B",topic:"Unity Catalog"},
+  {q:"A data engineer inherits a Delta table with historical partitions by country that are badly skewed. Queries filter by high-cardinality columns such as customer_id. Which TWO actions should the data engineer take?",opts:{A:"Disable data skipping statistics to avoid maintenance overhead, relying on adaptive query execution instead.",B:"Switch from static partitioning to Liquid Clustering, and select initial clustering keys that reflect common filters such as customer_id.",C:"Periodically run OPTIMIZE table_name to maintain clustering effectiveness.",D:"Keep existing partitions and rely on bin-packing OPTIMIZE only.",E:"Depend solely on optimized writes; Databricks will automatically replace partitioning with clustering over time."},correct:["B","C"],multi:true,topic:"Optimization"},
+  {q:"A client is ready to deploy a Python ETL script to production. The job processes a small dataset (around 10 GB) and performs only simple joins, with no complex aggregations or wide transformations. The client wants the most cost-effective yet efficient cluster type. Which cluster configuration should the data engineer choose?",opts:{A:"Job cluster with spot instances enabled",B:"Job cluster with Photon enabled",C:"Interactive cluster",D:"Job cluster with spot instances disabled"},correct:"A",topic:"Compute"},
+  {q:"An organization plans to share a large dataset stored in a Databricks workspace on AWS with a partner organization whose Databricks workspace is hosted on Azure. The data engineer wants to minimize data transfer costs while ensuring secure and efficient data sharing. Which strategy will reduce data egress costs?",opts:{A:"Configure VPN connection between AWS and Azure for faster data sharing.",B:"Use Delta Sharing without any additional configurations.",C:"Share data via pre-signed URLs without monitoring egress costs.",D:"Migrate the dataset to Cloudflare R2 object storage before sharing."},correct:"D",topic:"Governance"},
+  {q:"A data engineer needs to optimize data layout for an e-commerce transactions Delta table. Currently partitioned by purchase_date. Most queries filter by customer_id within specific date ranges but since customer_id is not clustered, queries scan full partitions. How should the data engineer optimize?",opts:{A:"Alter the table to implement Z-order clustering on customer_id while keeping the existing partitioning by purchase_date.",B:"Alter the table to repartition by customer_id instead of purchase_date.",C:"Enable Delta caching on the cluster so that frequent reads are cached for performance.",D:"Alter the table to implement Z-order clustering on both customer_id and purchase_date."},correct:"A",topic:"Optimization"},
+  {q:"A data engineer is working in a Python notebook on Databricks to process data but notices that the output is not as expected. The data engineer wants to investigate the issue by stepping through the code and inspecting the values of variables during execution. Which tool should the data engineer use?",opts:{A:"Job Execution Dashboard",B:"SQL Analytics",C:"Cluster Logs",D:"Python Notebook Interactive Debugger"},correct:"D",topic:"Python"},
+  {q:"A data engineer needs to perform exploratory data analysis (EDA) on data stored in a catalog within the company's secured cloud network. The data engineer plans to use SQL for querying. Which type of SQL warehouse will allow efficient processing of a large number of queries?",opts:{A:"Pro SQL Warehouse",B:"Classic SQL Warehouse",C:"Serverless SQL Warehouse",D:"Serverless compute for notebooks"},correct:"B",topic:"Compute"},
+  {q:"A data engineer needs to share specific Unity Catalog-managed Delta tables and the notebook jobs that create these tables with a partner organization. Which approach allows the data engineer to seamlessly and securely share the required information?",opts:{A:"Zip all the code and send it via email, allowing the partner to ingest data from your data lake.",B:"Use Unity Catalog to share both the data and the notebooks directly with the partner organization.",C:"Share the required datasets via Delta Sharing and manage permissions via Unity Catalog.",D:"Share the codebase via GitHub and allow the partner to ingest datasets from your data lake."},correct:"C",topic:"Governance"},
+  {q:"A data engineer is setting up access control in Unity Catalog. A group of data analysts should be able to query tables but cannot modify data. Which permission should the data engineer grant to the data analysts?",opts:{A:"INSERT",B:"SELECT",C:"ALL PRIVILEGES",D:"MODIFY"},correct:"B",topic:"Governance"},
+  {q:"A data engineer deploys a multi-task Databricks job that orchestrates three notebooks. One of the notebooks fails intermittently on retry. The engineer needs to collect detailed logs for the failing attempts to debug the issue. Which steps should the data engineer follow?",opts:{A:"Export the notebook run results to HTML, which includes console output and errors, and share it with the platform team.",B:"Use the notebook interactive debugger to re-run the entire multi-task job and capture detailed logs for the failing task.",C:"Download the worker logs directly from the Spark UI and inspect driver and executor logs to identify the issue.",D:"From the job run details page, export the job's logs or configure log delivery, then retrieve cluster logs from the compute details page to correlate stdout/stderr with cluster events."},correct:"D",topic:"Jobs"},
+  {q:"A data engineer wants to reduce costs using Databricks Serverless while maintaining existing SLAs. Which type of workload should the data engineer migrate first?",opts:{A:"A frequently running, efficient Python-based data transformation pipeline compatible with the latest Databricks runtime and Unity Catalog.",B:"A frequently running, efficient Scala-based data transformation pipeline compatible with the latest Databricks runtime and Unity Catalog.",C:"Low-frequency BI dashboards and ad-hoc SQL analytics workloads.",D:"Legacy ingestion pipelines that include ingestion from APIs, files, JDBC/ODBC connections."},correct:"A",topic:"Compute"},
+  {q:"An organization has data stored across multiple external systems, including MySQL, Amazon Redshift, and Google BigQuery. The data engineer wants to perform analytics without ingesting directly into Databricks, ensuring unified governance and minimizing data duplication. Which feature enables querying these external data sources?",opts:{A:"Delta Lake",B:"Lakehouse Federation",C:"MLflow",D:"Databricks Connect"},correct:"B",topic:"Architecture"},
+  {q:"A data engineer must deliver a trustworthy customer dataset in Databricks for data scientists and BI teams. The engineer plans to join deduplicated customer records with cleaned transaction data, enforce schema and data quality checks, and create a conformed 'customer transactions' view. Later, highly aggregated, domain-specific tables will be produced for dashboards. Where should the engineer build the conformed 'customer_transactions' dataset, and where should the aggregated report-ready tables reside?",opts:{A:"Build 'customer_transactions' in Bronze and put the aggregated, report-ready tables in Silver.",B:"Build both 'customer_transactions' and aggregated, report-ready tables in Silver to keep the model simpler",C:"Build 'customer_transactions' in Silver and put the aggregated, report-ready tables in Gold",D:"Build 'customer_transactions' in Gold and put the aggregated, report-ready tables in Silver"},correct:"C",topic:"Medallion"},
+  {q:"A data engineer is migrating pipeline tasks to reduce operational effort. The workspace uses Unity Catalog and is in a region that supports serverless. The engineer wants Databricks to auto-select instance types, manage scaling, apply Photon, and handle runtime updates automatically for job runs. How should the data engineer meet this requirement?",opts:{A:"Create a job with a single-task job cluster and manually set instance families and min/max workers.",B:"Run the job on a serverless compute for workflows configuration, ensuring Unity Catalog is enabled and regional support is available.",C:"Use an all-purpose cluster with cluster policies to enforce standard sizes and enable autoscaling.",D:"Use a Pro SQL warehouse and schedule Python notebook tasks to execute as pipeline steps."},correct:"B",topic:"Compute"},
+  {q:"A data engineer requires rapid iteration on pipelines while maintaining reliable rollbacks after bad ingests, ensuring audit trails for regulatory compliance, and providing consistent access to a single source of truth for both AI and BI workloads. Which strategy should the data engineer apply?",opts:{A:"DBFS CSV storage with manual file versioning and nightly copies for rollback",B:"Cloud object storage only, with ad hoc SQL queries for recovery and governance.",C:"Delta Lake ACID transactions and time travel, governed by Unity Catalog for consistent access and lineage",D:"Ephemeral in-memory DataFrames for audit trails and BI distribution"},correct:"C",topic:"Delta Lake"},
+  {q:"A data engineering team wants to validate a new ingestion pipeline locally while ensuring large aggregations run on serverless compute in their Databricks workspace. They plan to use Databricks Connect. Which workspace requirement should be confirmed first to avoid connection failures?",opts:{A:"Verify that the workspace has Unity Catalog disabled and the Databricks Connect version is less than the serverless Runtime version",B:"Verify that the local Spark version equals the serverless Spark version to satisfy Spark Connect parity",C:"Verify that the workspace has Unity Catalog enabled and that the Databricks Connect version supports serverless for the target Runtime release",D:"Verify that only assigned access mode clusters are used because serverless is not supported by Databricks Connect"},correct:"C",topic:"Architecture"},
+  {q:"A data engineer is getting a partner organization up to speed with their Databricks account. The data engineer has to share Unity Catalog-managed Delta tables and the notebook jobs creating those tables with the partner organization. How can the data engineer seamlessly share the required information?",opts:{A:"Share required datasets and notebooks via Delta Sharing. Manage permissions via Unity Catalog",B:"Data and Notebooks can be shared simply using Unity Catalog.",C:"Share access to codebase via Github and allow them to ingest datasets from your Datalake",D:"Zip all the code and share via email and allow data ingestion from your data lake"},correct:"A",topic:"Governance"},
+];
+
+// ==================== STATE ====================
+let activeQs = [];
+let currentIdx = 0;
+let userAnswers = {};
+let correctCount = 0;
+let skippedCount = 0;
+let timerInterval = null;
+let timeLeft = 90 * 60;
+let showAnswers = true;
+let selectedMulti = [];
+
+// ==================== HELPERS ====================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+// Update total question count on home
+document.getElementById('total-q-count').textContent = ALL_QUESTIONS.length;
+
+// ==================== START QUIZ ====================
+function startQuiz() {
+  const topicFilter = document.getElementById('opt-topic').value;
+  const countOpt = document.getElementById('opt-count').value;
+  const doShuffle = document.getElementById('opt-shuffle').checked;
+  showAnswers = document.getElementById('opt-show-answer').checked;
+  const useTimer = document.getElementById('opt-timer').checked;
+
+  let qs = topicFilter === 'all'
+    ? [...ALL_QUESTIONS]
+    : ALL_QUESTIONS.filter(q => q.topic === topicFilter);
+
+  if (doShuffle) qs = shuffle(qs);
+
+  if (countOpt !== 'all') {
+    const n = parseInt(countOpt);
+    qs = qs.slice(0, Math.min(n, qs.length));
+  }
+
+  activeQs = qs;
+  currentIdx = 0;
+  userAnswers = {};
+  correctCount = 0;
+  skippedCount = 0;
+  selectedMulti = [];
+
+  hide('home');
+  show('quiz');
+
+  if (useTimer) {
+    timeLeft = 90 * 60;
+    show('timer-display');
+    startTimer();
+  } else {
+    hide('timer-display');
+  }
+
+  renderQuestion();
+}
+
+// ==================== TIMER ====================
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      showResults();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.classList.toggle('urgent', timeLeft < 300);
+}
+
+// ==================== RENDER QUESTION ====================
+function renderQuestion() {
+  const total = activeQs.length;
+  const q = activeQs[currentIdx];
+  const progress = ((currentIdx) / total) * 100;
+
+  document.getElementById('q-counter').textContent = `Question ${currentIdx + 1} / ${total}`;
+  document.getElementById('q-topic-label').textContent = q.topic;
+  document.getElementById('q-num-badge').textContent = `Q${String(currentIdx + 1).padStart(2,'0')}`;
+  document.getElementById('q-topic-badge').textContent = q.topic;
+  document.getElementById('progress-fill').style.width = progress + '%';
+  document.getElementById('live-score').textContent = correctCount;
+
+  const multiB = document.getElementById('multi-badge');
+  if (q.multi) { multiB.classList.remove('hidden'); multiB.textContent = `Choose ${q.correct.length}`; }
+  else multiB.classList.add('hidden');
+
+  // Question text
+  let qHtml = q.q;
+  if (q.code) {
+    // Don't add a code block for code options
+  }
+  document.getElementById('q-text').innerHTML = qHtml;
+
+  // Options
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  selectedMulti = [];
+
+  Object.entries(q.opts).forEach(([letter, text]) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.dataset.letter = letter;
+
+    const isCode = text.includes('\n') || text.startsWith('import ') || text.startsWith('from ') || text.startsWith('df ') || text.startsWith('spark') || text.startsWith('region') || text.startsWith('aggregated') || text.startsWith('GRANT') || text.startsWith('CREATE') || text.startsWith('INSERT') || text.startsWith('SELECT') || text.startsWith('CONSTRAINT');
+
+    btn.innerHTML = `
+      <span class="option-letter">${letter}</span>
+      <span class="option-text" style="${isCode ? 'font-family:var(--mono);font-size:12px;white-space:pre-wrap' : ''}">${escapeHtml(text)}</span>`;
+
+    if (q.multi) {
+      btn.addEventListener('click', () => toggleMultiOption(btn, letter, q));
+    } else {
+      btn.addEventListener('click', () => selectOption(btn, letter, q));
+    }
+    container.appendChild(btn);
+  });
+
+  // Reset UI
+  const feedbackBox = document.getElementById('feedback-box');
+  feedbackBox.className = 'feedback-box';
+  feedbackBox.querySelector('#fb-text').innerHTML = '';
+
+  hide('btn-next');
+  document.getElementById('btn-submit').classList.toggle('hidden', !q.multi);
+
+  // Restore if already answered
+  if (userAnswers[currentIdx] !== undefined) {
+    restoreAnsweredState(q);
+  }
+
+  // Animate
+  const card = document.getElementById('q-card');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'slideIn 0.3s ease forwards';
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ==================== SINGLE SELECT ====================
+function selectOption(btn, letter, q) {
+  if (userAnswers[currentIdx] !== undefined) return;
+
+  userAnswers[currentIdx] = letter;
+  const correct = q.correct;
+  const isCorrect = letter === correct;
+
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    const l = b.dataset.letter;
+    if (l === correct) b.classList.add('correct');
+    else if (l === letter && !isCorrect) b.classList.add('wrong');
+  });
+
+  if (isCorrect) correctCount++;
+
+  if (showAnswers) showFeedback(isCorrect, correct, q.opts[correct]);
+  show('btn-next');
+}
+
+// ==================== MULTI SELECT ====================
+function toggleMultiOption(btn, letter, q) {
+  if (userAnswers[currentIdx] !== undefined) return;
+  const idx = selectedMulti.indexOf(letter);
+  if (idx === -1) {
+    if (selectedMulti.length < q.correct.length) {
+      selectedMulti.push(letter);
+      btn.classList.add('selected');
+      btn.querySelector('.option-letter').style.background = 'var(--blue)';
+      btn.querySelector('.option-letter').style.borderColor = 'var(--blue)';
+      btn.querySelector('.option-letter').style.color = '#fff';
+    }
+  } else {
+    selectedMulti.splice(idx, 1);
+    btn.classList.remove('selected');
+    btn.querySelector('.option-letter').style.background = '';
+    btn.querySelector('.option-letter').style.borderColor = '';
+    btn.querySelector('.option-letter').style.color = '';
+  }
+  document.getElementById('btn-submit').disabled = selectedMulti.length !== q.correct.length;
+}
+
+function submitMulti() {
+  const q = activeQs[currentIdx];
+  if (selectedMulti.length !== q.correct.length) return;
+
+  userAnswers[currentIdx] = [...selectedMulti];
+  const correct = q.correct;
+  const isCorrect = selectedMulti.sort().join('') === [...correct].sort().join('');
+
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    const l = b.dataset.letter;
+    if (correct.includes(l)) {
+      b.classList.add('correct');
+    } else if (selectedMulti.includes(l) && !correct.includes(l)) {
+      b.classList.add('wrong');
+    }
+  });
+
+  if (isCorrect) correctCount++;
+  if (showAnswers) showFeedback(isCorrect, correct.join(' & '), correct.map(l => q.opts[l]).join(' / '));
+
+  hide('btn-submit');
+  show('btn-next');
+}
+
+function showFeedback(isCorrect, correctLetter, correctText) {
+  const box = document.getElementById('feedback-box');
+  const icon = document.getElementById('fb-icon');
+  const text = document.getElementById('fb-text');
+
+  box.className = 'feedback-box show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  icon.textContent = isCorrect ? '✅' : '❌';
+  text.innerHTML = isCorrect
+    ? `<strong>Correct!</strong> ${escapeHtml(correctText)}`
+    : `<strong>Incorrect.</strong> The correct answer is <strong>${correctLetter}</strong>: ${escapeHtml(correctText)}`;
+}
+
+function restoreAnsweredState(q) {
+  const ans = userAnswers[currentIdx];
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    const l = b.dataset.letter;
+    const correct = q.multi ? q.correct : [q.correct];
+    const userAns = q.multi ? ans : [ans];
+    if (correct.includes(l)) b.classList.add('correct');
+    else if (userAns.includes(l)) b.classList.add('wrong');
+  });
+  show('btn-next');
+  if (q.multi) hide('btn-submit');
+}
+
+// ==================== NAVIGATION ====================
+function skipQuestion() {
+  if (userAnswers[currentIdx] === undefined) {
+    userAnswers[currentIdx] = null;
+    skippedCount++;
+  }
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (currentIdx + 1 >= activeQs.length) {
+    showResults();
+  } else {
+    currentIdx++;
+    renderQuestion();
+  }
+}
+
+// ==================== RESULTS ====================
+function showResults() {
+  clearInterval(timerInterval);
+  hide('quiz');
+  show('results');
+
+  const total = activeQs.length;
+  const wrong = total - correctCount - skippedCount;
+  const skipped = skippedCount + (total - Object.keys(userAnswers).length);
+  const pct = Math.round((correctCount / total) * 100);
+  const passed = pct >= 70;
+
+  document.getElementById('r-icon').textContent = passed ? '🏆' : '📚';
+  document.getElementById('r-title').textContent = passed ? 'Passed!' : 'Keep Practicing';
+  document.getElementById('r-title').className = 'results-title ' + (passed ? 'pass' : 'fail');
+  document.getElementById('r-sub').textContent = `You scored ${pct}% — ${passed ? 'above' : 'below'} the 70% pass mark`;
+  document.getElementById('r-correct').textContent = correctCount;
+  document.getElementById('r-wrong').textContent = Math.max(0, total - correctCount - skipped);
+  document.getElementById('r-skipped').textContent = skipped;
+  document.getElementById('r-total').textContent = total;
+  document.getElementById('r-pct').textContent = pct + '%';
+
+  const bar = document.getElementById('r-bar');
+  bar.className = 'score-bar-fill ' + (passed ? 'pass' : 'fail');
+  setTimeout(() => { bar.style.width = pct + '%'; }, 100);
+
+  buildReview();
+}
+
+function buildReview() {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  activeQs.forEach((q, i) => {
+    const ans = userAnswers[i];
+    const correct = q.multi ? q.correct : [q.correct];
+    const userAns = ans === null || ans === undefined ? [] : (Array.isArray(ans) ? ans : [ans]);
+    const isCorrect = ans !== null && ans !== undefined && [...correct].sort().join('') === [...userAns].sort().join('');
+    const isSkipped = ans === null || ans === undefined;
+
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="review-item-header" onclick="this.parentNode.querySelector('.review-detail').classList.toggle('open')">
+        <span class="review-status">${isSkipped ? '⏭' : (isCorrect ? '✅' : '❌')}</span>
+        <span class="review-q-num">Q${String(i+1).padStart(2,'0')}</span>
+        <span class="review-q-text">${escapeHtml(q.q.substring(0, 80))}${q.q.length > 80 ? '...' : ''}</span>
+      </div>
+      <div class="review-detail">
+        <div class="q-text" style="font-size:14px;margin-bottom:12px">${escapeHtml(q.q)}</div>
+        <div class="review-answers">
+          ${Object.entries(q.opts).map(([l, t]) => {
+            let cls = 'r-neutral';
+            if (correct.includes(l)) cls = 'r-correct';
+            else if (userAns.includes(l) && !correct.includes(l)) cls = 'r-wrong';
+            return `<div class="review-opt ${cls}"><strong>${l}.</strong> ${escapeHtml(t)}</div>`;
+          }).join('')}
+        </div>
+        ${isSkipped ? '<div style="margin-top:8px;font-size:12px;color:var(--text3)">Skipped</div>' : (isCorrect ? '' : `<div style="margin-top:8px;font-size:12px;color:var(--text3)">Your answer: ${userAns.join(', ') || 'None'}</div>`)}
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+function toggleReview() {
+  const sec = document.getElementById('review-section');
+  sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+}
+
+function restartQuiz() {
+  hide('results');
+  startQuiz();
+}
+
+function goHome() {
+  clearInterval(timerInterval);
+  hide('results');
+  hide('quiz');
+  show('home');
+}
+</script>
+</body>
+</html>
